@@ -166,7 +166,7 @@ const AddUserModal = ({ isOpen, onClose }: AddUserModalProps): ReactElement => {
             value={profile.company}
             name='company' placeholder='Empresa' type='text'
             setValid={(valid) => { setIsValidInput('company', valid) }}
-            setValue={setUserValue}></Input>
+            setValue={setProfileValue}></Input>
 
           <Input
             label='Empresa quien contrata'
