@@ -13,6 +13,7 @@ import SelectInput from '@/shared/ui/components/SelectInput'
 import { UserRole } from '@/users/models/enum/role.enum'
 import Button from '@/shared/ui/components/Button'
 import Divider from '@/shared/ui/components/Divider'
+import { useBooleanState } from '@/shared/hooks/useBooleanState'
 
 interface AddUserModalProps {
   isOpen: boolean
@@ -28,6 +29,7 @@ const AddUserModal = ({ isOpen, onClose }: AddUserModalProps): ReactElement => {
   const [areas, setAreas] = useState<Area[]>([])
 
   const [canSubmit, setCanSubmit] = useState<boolean>(false)
+  const [isLoading,, setIsLoading] = useBooleanState()
 
   // const areaRef = useRef<HTMLSelectElement>(null)
 
@@ -45,6 +47,7 @@ const AddUserModal = ({ isOpen, onClose }: AddUserModalProps): ReactElement => {
   })
 
   useEffect(() => {
+    setIsLoading(false)
     const areasService = new AreasService()
     void areasService.findAll()
       .then(setAreas)
@@ -56,6 +59,7 @@ const AddUserModal = ({ isOpen, onClose }: AddUserModalProps): ReactElement => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault()
+    setIsLoading(true)
     const areasService = new AreasService()
     const usersService = new UsersService()
 
@@ -68,6 +72,7 @@ const AddUserModal = ({ isOpen, onClose }: AddUserModalProps): ReactElement => {
           .then(profile => {
             void areasService.assignUser(areaId, user.id)
               .then(userWithArea => {
+                setIsLoading(false)
                 userWithArea.profile = profile
                 addUser(userWithArea)
                 resetUser()
@@ -76,11 +81,13 @@ const AddUserModal = ({ isOpen, onClose }: AddUserModalProps): ReactElement => {
                 toast('Usuario creado correctamente', { toastId, type: 'success' })
               })
               .catch(error => {
+                setIsLoading(false)
                 const { message } = error.data
                 toast(message, { toastId, type: 'error' })
               })
           })
           .catch(error => {
+            setIsLoading(false)
             void usersService.remove(user.id)
 
             const { message } = error.data
@@ -89,6 +96,7 @@ const AddUserModal = ({ isOpen, onClose }: AddUserModalProps): ReactElement => {
           })
       })
       .catch(error => {
+        setIsLoading(false)
         const { message } = error.data
         toast(message, { toastId, type: 'error' })
       })
@@ -219,7 +227,7 @@ const AddUserModal = ({ isOpen, onClose }: AddUserModalProps): ReactElement => {
 
           <div className='flex justify-center gap-5 mt-4'>
             <Button color='secondary' onClick={onClose}>Cerrar</Button>
-            <Button color='primary' type='submit' disabled={!canSubmit}>Añadir Usuario</Button>
+            <Button color='primary' type='submit' disabled={!canSubmit || isLoading} isLoading={isLoading}>Añadir Usuario</Button>
           </div>
         </form>
       </div>
