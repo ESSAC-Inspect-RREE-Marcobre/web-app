@@ -52,7 +52,7 @@ const GroupFormModal = ({ isOpen, onClose }: GroupFormModalProps): ReactElement 
 
     const submitAction = formAction === 'update' ? groupsService.update : reportTypesService.createGroup
     const onSuccess = formAction === 'add' ? addGroup : updateGroup
-    const id = formAction === 'update' ? groupForm?.id ?? '' : group.reportTypeId
+    const id = formAction === 'update' ? groupForm?.id ?? '' : selectedReportType?.id ?? ''
 
     void submitAction(group, id)
       .then((response) => {
