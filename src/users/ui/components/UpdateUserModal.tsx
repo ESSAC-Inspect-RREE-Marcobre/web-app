@@ -39,7 +39,6 @@ const UpdateUserModal = ({ isOpen, onClose }: AddUserModalProps): ReactElement =
 
   useEffect(() => {
     if (selectedUser === null) {
-      onClose()
       return
     }
 
@@ -97,7 +96,7 @@ const UpdateUserModal = ({ isOpen, onClose }: AddUserModalProps): ReactElement =
   return (
     <Modal isOpen={isOpen} onClose={onClose} className='min-w-[600px]'>
       <div className='p-6'>
-        <h1 className='uppercase text-center font-bold mb-4'>Añadir Usuario</h1>
+        <h1 className='uppercase text-center font-bold mb-4'>Editar Usuario</h1>
         <form onSubmit={handleSubmit} className='flex flex-col'>
           <Input
             label='Usuario'
