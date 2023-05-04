@@ -15,4 +15,9 @@ export class AdminService extends AppServices {
     return await this.post<ExcelResponse>('/import-vehicle-excel', file)
       .then(response => response.data)
   }
+
+  importCartExcel = async (file: any): Promise<ExcelResponse> => {
+    return await this.post<ExcelResponse>('/import-cart-excel', file)
+      .then(response => response.data)
+  }
 }

@@ -28,6 +28,8 @@ const VehiclesView = ({ areCarts }: VehicleViewProps): ReactElement => {
   const [showImportModal, toggleShowImportModal] = useBooleanState()
   const [showDetailModal, toggleShowDetailModal] = useBooleanState()
 
+  const [importType, setImportType] = useState<'vehicle' | 'cart'>('vehicle')
+
   useEffect(() => {
     const vehiclesService = new VehiclesService()
     void vehiclesService.findAll()
@@ -35,6 +37,10 @@ const VehiclesView = ({ areCarts }: VehicleViewProps): ReactElement => {
         const vehiclesFiltered = vehicles.filter((vehicle) => vehicle.vehicleType.isCart === areCarts)
         setVehicles(vehiclesFiltered)
       })
+  }, [areCarts])
+
+  useEffect(() => {
+    setImportType(areCarts ? 'cart' : 'vehicle')
   }, [areCarts])
 
   const onImportSuccess = (newVehicles: Vehicle[]): void => {
@@ -65,7 +71,7 @@ const VehiclesView = ({ areCarts }: VehicleViewProps): ReactElement => {
       <VehiclesTable toggleShowForm={toggleShowForm} areCarts={areCarts} toggleShowDetail={toggleShowDetailModal}/>
 
       <VehicleFormModal isOpen={showForm} onClose={toggleShowForm} isCart={areCarts}/>
-      <ImportModal isOpen={showImportModal} onClose={toggleShowImportModal} onSuccess={onImportSuccess} toastId={TOAST_ID} type='vehicle'/>
+      <ImportModal isOpen={showImportModal} onClose={toggleShowImportModal} onSuccess={onImportSuccess} toastId={TOAST_ID} type={importType}/>
       <VehicleDetailModal isOpen={showDetailModal} onClose={toggleShowDetailModal}/>
 
       <Toast id={TOAST_ID} />

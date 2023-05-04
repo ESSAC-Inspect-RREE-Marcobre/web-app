@@ -1,19 +1,27 @@
 import React, { useContext, type ReactElement } from 'react'
 import { UserContext } from '../contexts/UserContext'
-import Table, { type Column } from '@/shared/ui/components/table/Table'
+import Table, { type Action, type Column } from '@/shared/ui/components/table/Table'
 import { type User } from '@/users/models/user.interface'
 import { capitalize } from '@/shared/utils'
+import EditIcon from '@/shared/ui/assets/icons/EditIcon'
+import EyeIcon from '@/shared/ui/assets/icons/EyeIcon'
 
 interface UsersTableProps {
   toggleShowDetailModal: () => void
+  toggleShowUpdateModal: () => void
 }
 
-const UsersTable = ({ toggleShowDetailModal }: UsersTableProps): ReactElement => {
+const UsersTable = ({ toggleShowDetailModal, toggleShowUpdateModal }: UsersTableProps): ReactElement => {
   const { users, setSelectedUser } = useContext(UserContext)
 
-  const onClickUser = (user: User): void => {
+  const handleView = (user: User): void => {
     setSelectedUser(user)
     toggleShowDetailModal()
+  }
+
+  const handleUpdate = (user: User): void => {
+    setSelectedUser(user)
+    toggleShowUpdateModal()
   }
 
   const USER_COLUMNS: Array<Column<User>> = [
@@ -59,6 +67,17 @@ const UsersTable = ({ toggleShowDetailModal }: UsersTableProps): ReactElement =>
     }
   ]
 
+  const USER_ACTIONS: Array<Action<User>> = [
+    {
+      icon: () => (<EditIcon className='cursor-pointer w-5 h-5' />),
+      actionFunc: handleUpdate
+    },
+    {
+      icon: () => (<EyeIcon className='cursor-pointer w-5 h-5 ' />),
+      actionFunc: handleView
+    }
+  ]
+
   const PAGINATION = [5, 10, 15, 20]
 
   return (
@@ -68,7 +87,7 @@ const UsersTable = ({ toggleShowDetailModal }: UsersTableProps): ReactElement =>
         columns={USER_COLUMNS}
         pagination={PAGINATION}
         showFilter={true}
-        onRowClick={onClickUser}
+        actions={USER_ACTIONS}
       />
     </main>
   )

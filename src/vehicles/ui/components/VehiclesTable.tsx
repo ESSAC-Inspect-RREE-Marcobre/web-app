@@ -7,6 +7,7 @@ import EyeIcon from '@/shared/ui/assets/icons/EyeIcon'
 import { VehiclesService } from '@/vehicles/services/vehicles.service'
 import { type Vehicle } from '@/vehicles/models/vehicle.interface'
 import { VehicleContext } from '../contexts/VehicleContext'
+import { isDate } from '@/shared/utils'
 
 interface VehiclesTableProps {
   toggleShowForm: () => void
@@ -57,9 +58,13 @@ const VehiclesTable = ({ areCarts, toggleShowForm, toggleShowDetail }: VehiclesT
     {
       id: 'provider',
       columnName: 'Proveedor',
-      filterFunc: (vehicle) => vehicle.provider,
-      sortFunc: (a, b) => a.provider > b.provider ? 1 : -1,
-      render: (vehicle) => vehicle.provider
+      filterFunc: (vehicle) => vehicle.provider ?? 'No registrado',
+      sortFunc: (a, b) => {
+        const providerA = a.provider ?? 'no registrado'
+        const providerB = b.provider ?? 'no registrado'
+        return providerA > providerB ? 1 : -1
+      },
+      render: (vehicle) => vehicle.provider ?? 'No registrado'
     },
     {
       id: 'company',
@@ -71,13 +76,13 @@ const VehiclesTable = ({ areCarts, toggleShowForm, toggleShowDetail }: VehiclesT
     {
       id: 'imei',
       columnName: 'Imei',
-      filterFunc: (vehicle) => vehicle.imei.length > 0 ? vehicle.imei : 'Imei registrado',
+      filterFunc: (vehicle) => vehicle.imei ?? 'No registrado',
       sortFunc: (a, b) => {
-        const imeiA = a.imei.length > 0 ? a.imei : 'Imei registrado'
-        const imeiB = b.imei.length > 0 ? b.imei : 'Imei registrado'
+        const imeiA = a.imei ?? 'No registrado'
+        const imeiB = b.imei ?? 'No registrado'
         return imeiA > imeiB ? 1 : -1
       },
-      render: (vehicle) => vehicle.imei.length > 0 ? vehicle.imei : 'Imei registrado'
+      render: (vehicle) => vehicle.imei ?? 'No registrado'
     },
     {
       id: 'lastMaintenance',
@@ -86,7 +91,7 @@ const VehiclesTable = ({ areCarts, toggleShowForm, toggleShowDetail }: VehiclesT
         if (!vehicle.lastMaintenance) {
           return 'No registrado'
         }
-        return vehicle.lastMaintenance.trim().length > 0 ? new Date(vehicle.lastMaintenance).toDateString() : 'No registrado'
+        return isDate(vehicle.lastMaintenance) ? new Date(vehicle.lastMaintenance).toDateString() : 'No registrado'
       },
       sortFunc: (a, b) => {
         const aLastMaintenance = a.lastMaintenance ?? 'No registrado'
@@ -99,11 +104,7 @@ const VehiclesTable = ({ areCarts, toggleShowForm, toggleShowDetail }: VehiclesT
         return new Date(aLastMaintenance).getTime() - new Date(bLastMaintenance).getTime()
       },
       render: (vehicle) => {
-        if (vehicle.lastMaintenance === null) {
-          return 'No registrado'
-        }
-
-        if (vehicle.lastMaintenance.length === 0) {
+        if (vehicle.lastMaintenance === null || !isDate(vehicle.lastMaintenance)) {
           return 'No registrado'
         }
 
@@ -113,21 +114,56 @@ const VehiclesTable = ({ areCarts, toggleShowForm, toggleShowDetail }: VehiclesT
     {
       id: 'soatExpiration',
       columnName: 'F. Venc. Soat',
-      filterFunc: (vehicle) => new Date(vehicle.soatExpiration).toDateString(),
-      sortFunc: (a, b) => new Date(a.soatExpiration).getTime() - new Date(b.soatExpiration).getTime(),
-      render: (vehicle) => new Date(vehicle.soatExpiration).toDateString()
+      filterFunc: (vehicle) => {
+        if (!vehicle.soatExpiration) {
+          return 'No registrado'
+        }
+        return isDate(vehicle.soatExpiration) ? new Date(vehicle.soatExpiration).toDateString() : 'No registrado'
+      },
+      sortFunc: (a, b) => {
+        const aSoatExpiration = a.soatExpiration ?? 'No registrado'
+        const bSoatExpiration = b.soatExpiration ?? 'No registrado'
+
+        if (isNaN(Date.parse(aSoatExpiration)) && isNaN(Date.parse(bSoatExpiration))) {
+          return aSoatExpiration > bSoatExpiration ? 1 : -1
+        }
+
+        return new Date(aSoatExpiration).getTime() - new Date(bSoatExpiration).getTime()
+      },
+      render: (vehicle) => {
+        if (vehicle.soatExpiration === null || !isDate(vehicle.soatExpiration)) {
+          return 'No registrado'
+        }
+
+        return new Date(vehicle.soatExpiration).toDateString()
+      }
     },
     {
       id: 'technicalReviewExpiration',
       columnName: 'F. Venc. Revisión Técnica',
-      filterFunc: (vehicle) => new Date(vehicle.technicalReviewExpiration).toDateString(),
-      sortFunc: (a, b) => {
-        const aTime = new Date(a.technicalReviewExpiration).getTime()
-        const bTime = new Date(b.technicalReviewExpiration).getTime()
-
-        return aTime - bTime
+      filterFunc: (vehicle) => {
+        if (!vehicle.technicalReviewExpiration) {
+          return 'No registrado'
+        }
+        return isDate(vehicle.technicalReviewExpiration) ? new Date(vehicle.technicalReviewExpiration).toDateString() : 'No registrado'
       },
-      render: (vehicle) => new Date(vehicle.technicalReviewExpiration).toDateString()
+      sortFunc: (a, b) => {
+        const aTechnicalReviewExpiration = a.technicalReviewExpiration ?? 'No registrado'
+        const bTechnicalReviewExpiration = b.technicalReviewExpiration ?? 'No registrado'
+
+        if (isNaN(Date.parse(aTechnicalReviewExpiration)) && isNaN(Date.parse(bTechnicalReviewExpiration))) {
+          return aTechnicalReviewExpiration > bTechnicalReviewExpiration ? 1 : -1
+        }
+
+        return new Date(aTechnicalReviewExpiration).getTime() - new Date(bTechnicalReviewExpiration).getTime()
+      },
+      render: (vehicle) => {
+        if (vehicle.technicalReviewExpiration === null || !isDate(vehicle.technicalReviewExpiration)) {
+          return 'No registrado'
+        }
+
+        return new Date(vehicle.technicalReviewExpiration).toDateString()
+      }
     },
     {
       id: 'vehicleType',
@@ -139,16 +175,24 @@ const VehiclesTable = ({ areCarts, toggleShowForm, toggleShowDetail }: VehiclesT
     {
       id: 'brand',
       columnName: 'Marca',
-      filterFunc: (vehicle) => vehicle.brand,
-      sortFunc: (a, b) => a.brand > b.brand ? 1 : -1,
-      render: (vehicle) => vehicle.brand
+      filterFunc: (vehicle) => vehicle.brand ?? 'No registrado',
+      sortFunc: (a, b) => {
+        const brandA = a.brand ?? 'No registrado'
+        const brandB = b.brand ?? 'No registrado'
+        return brandA > brandB ? 1 : -1
+      },
+      render: (vehicle) => vehicle.brand ?? 'No registrado'
     },
     {
       id: 'model',
       columnName: 'Modelo',
-      filterFunc: (vehicle) => vehicle.model,
-      sortFunc: (a, b) => a.model > b.model ? 1 : -1,
-      render: (vehicle) => vehicle.model
+      filterFunc: (vehicle) => vehicle.model ?? 'No registrado',
+      sortFunc: (a, b) => {
+        const modelA = a.model ?? 'No registrado'
+        const modelB = b.model ?? 'No registrado'
+        return modelA > modelB ? 1 : -1
+      },
+      render: (vehicle) => vehicle.model ?? 'No registrado'
     }
   ]
 
