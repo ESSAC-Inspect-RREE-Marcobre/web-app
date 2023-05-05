@@ -14,6 +14,7 @@ import AreasComponent from '../components/AreasComponent'
 import AddUserModal from '../components/AddUserModal'
 import ImportModal from '@/admin/ui/components/ImportModal'
 import UserDetailModal from '../components/UserDetailModal'
+import UpdateUserModal from '../components/UpdateUserModal'
 
 const TOAST_ID = 'users'
 
@@ -27,6 +28,7 @@ const UsersView = (): ReactElement => {
   const [isFormShown, toggleShowForm] = useBooleanState()
   const [isImportModalShown, toggleShowImportModal] = useBooleanState()
   const [isDetailModalShown, toggleShowDetailModal] = useBooleanState()
+  const [isUpdateModalShown, toggleShowUpdateModal] = useBooleanState()
 
   useEffect(() => {
     const usersService = new UsersService()
@@ -71,11 +73,12 @@ const UsersView = (): ReactElement => {
           <AreasComponent />
         </div>
         <div className='w-full order-1 md:order-2 mt-3 md:mt-0'>
-          <UsersTable toggleShowDetailModal={toggleShowDetailModal}/>
+          <UsersTable toggleShowDetailModal={toggleShowDetailModal} toggleShowUpdateModal={toggleShowUpdateModal}/>
         </div>
       </main>
 
       <UserDetailModal isOpen={isDetailModalShown} onClose={toggleShowDetailModal}/>
+      <UpdateUserModal isOpen={isUpdateModalShown} onClose={toggleShowUpdateModal}/>
       <AddUserModal isOpen={isFormShown} onClose={toggleShowForm} />
       <ImportModal isOpen={isImportModalShown} onClose={toggleShowImportModal} onSuccess={handleImportUsers} toastId={TOAST_ID} type='user' />
 

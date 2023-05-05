@@ -6,7 +6,7 @@ import Modal from '@/shared/ui/components/Modal'
 import React, { type ReactElement, useState } from 'react'
 import { toast } from 'react-toastify'
 
-type ImportObject = 'user' | 'vehicle'
+type ImportObject = 'user' | 'vehicle' | 'cart'
 
 interface ImportExcelProps {
   isOpen: boolean
@@ -26,8 +26,8 @@ const ImportExcel = ({ isOpen, onClose, onSuccess, toastId, type }: ImportExcelP
     event.preventDefault()
 
     if (file === null || file === undefined) {
-      setErrors(['No se ha subido nigún archivo'])
-      toast('No se ha subido nigún archivo', { toastId, type: 'error' })
+      setErrors(['No se ha subido ningún archivo'])
+      toast('No se ha subido ningún archivo', { toastId, type: 'error' })
       return
     }
 
@@ -37,7 +37,8 @@ const ImportExcel = ({ isOpen, onClose, onSuccess, toastId, type }: ImportExcelP
 
     const importFunctions = {
       user: adminService.importUserExcel,
-      vehicle: adminService.importVehicleExcel
+      vehicle: adminService.importVehicleExcel,
+      cart: adminService.importCartExcel
     }
 
     const importExcelFunction = importFunctions[type]

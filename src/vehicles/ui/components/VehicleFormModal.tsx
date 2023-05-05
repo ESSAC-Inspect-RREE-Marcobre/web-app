@@ -86,6 +86,9 @@ const VehicleFormModal = ({ isOpen, isCart, onClose }: VehicleFormModalProps): R
     const onSuccess = formAction === 'add' ? addVehicle : updateVehicle
     const id = formAction === 'add' ? vehicle.vehicleTypeId : vehicle.licensePlate
 
+    vehicle.provider = vehicle.provider === '' ? null : vehicle.provider
+    vehicle.imei = vehicle.imei === '' ? null : vehicle.imei
+
     void submitAction(vehicle, id)
       .then((vehicle) => {
         setVehicleForm(null)
@@ -96,6 +99,7 @@ const VehicleFormModal = ({ isOpen, isCart, onClose }: VehicleFormModalProps): R
         toast(`Vehículo ${formAction === 'add' ? 'añadido' : 'guardado'} correctamente`, { toastId, type: 'success' })
       })
       .catch(error => {
+        console.log(error)
         const { message } = error.data
         toast(message, { toastId, type: 'success' })
       })
@@ -137,11 +141,12 @@ const VehicleFormModal = ({ isOpen, isCart, onClose }: VehicleFormModalProps): R
                   disabled={formAction === 'update'}
                   setValue={setVehicleValue}></Input>
 
-                <Input
+                { vehicle.provider !== null && <Input
                   label='Proveedor'
                   value={vehicle.provider}
                   name='provider' placeholder='Proveedor' type='text'
-                  setValue={setVehicleValue}></Input>
+                  required={false}
+                  setValue={setVehicleValue}></Input>}
 
                 <Input
                   label='Empresa'
@@ -149,44 +154,45 @@ const VehicleFormModal = ({ isOpen, isCart, onClose }: VehicleFormModalProps): R
                   name='company' placeholder='Empresa' type='text'
                   setValue={setVehicleValue}></Input>
 
-                <Input
+                { vehicle.imei !== null && <Input
                   label='Imei'
                   value={vehicle.imei}
                   name='imei' placeholder='Imei' type='text'
-                  setValue={setVehicleValue}></Input>
+                  required={false}
+                  setValue={setVehicleValue}></Input>}
 
-                <Input
+                { vehicle.model !== null && <Input
                   label='Modelo'
                   value={vehicle.model}
                   name='model' placeholder='Modelo' type='text'
-                  setValue={setVehicleValue}></Input>
+                  setValue={setVehicleValue}></Input>}
 
-                <Input
+                { vehicle.brand !== null && <Input
                   label='Marca'
                   value={vehicle.brand}
                   name='brand' placeholder='Marca' type='text'
-                  setValue={setVehicleValue}></Input>
+                  setValue={setVehicleValue}></Input>}
 
-                <Input
+                { vehicle.soatExpiration !== null && <Input
                   label='Fecha Vencimiento Soat'
                   value={new Date(vehicle.soatExpiration).toISOString().substring(0, 10)}
                   required={false}
                   name='soatExpiration' placeholder='' type='date'
-                  setValue={setVehicleValue}></Input>
+                  setValue={setVehicleValue}></Input>}
 
-                <Input
+                { vehicle.technicalReviewExpiration !== null && <Input
                   label='Fecha Vencimiento Revisión Técnica'
                   value={new Date(vehicle.technicalReviewExpiration).toISOString().substring(0, 10)}
                   required={false}
                   name='technicalReviewExpiration' placeholder='' type='date'
-                  setValue={setVehicleValue}></Input>
+                  setValue={setVehicleValue}></Input>}
 
-                <Input
+                { vehicle.lastMaintenance !== null && <Input
                   label='Último Mantenimiento'
                   value={new Date(vehicle.lastMaintenance).toISOString().substring(0, 10)}
                   required={false}
                   name='lastMaintenance' placeholder='' type='date'
-                  setValue={setVehicleValue}></Input>
+                  setValue={setVehicleValue}></Input>}
 
                 <div className='mt-4 flex justify-center gap-3 items-center'>
                   <Button color='primary' type='submit' isLoading={isSubmitting}>{formAction === 'add' ? 'Añadir' : 'Guardar'}</Button>

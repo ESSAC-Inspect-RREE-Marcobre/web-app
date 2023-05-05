@@ -3,14 +3,14 @@ import { VEHICLE_TYPE_INITIAL_STATE, type VehicleType } from './vehicle-type.int
 export interface Vehicle {
   id: string
   licensePlate: string
-  provider: string
+  provider: string | null
   company: string
-  imei: string
-  brand: string
-  model: string
-  lastMaintenance: string
-  soatExpiration: string
-  technicalReviewExpiration: string
+  imei: string | null
+  brand: string | null
+  model: string | null
+  lastMaintenance: string | null
+  soatExpiration: string | null
+  technicalReviewExpiration: string | null
   vehicleType: VehicleType
 
   createdAt: string
