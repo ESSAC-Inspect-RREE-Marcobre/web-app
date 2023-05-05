@@ -6,7 +6,7 @@ const formatDate = (date: string): string => {
 }
 
 export const routeToExcelRoute = (route: Route): Record<string, any> => {
-  const { createdAt, startLocation, endLocation, materialType, name, code, message, state, doubleLicensePlate, isFull, vehicles, reports, routeProfiles } = route
+  const { createdAt, startLocation, endLocation, materialType, name, code, doubleLicensePlate, isFull, vehicles, reports, routeProfiles } = route
 
   const excelRoute = {
     'FECHA DE CREACIÓN': formatDate(createdAt),
@@ -17,8 +17,6 @@ export const routeToExcelRoute = (route: Route): Record<string, any> => {
     'TIPO DE MATERIAL': materialType,
     PLACA: name,
     CÓDIGO: code,
-    ESTADO: state,
-    'MENSAJE DE ESTADO': message,
     'DOBLE PLACA': doubleLicensePlate ? 'Sí' : 'No',
     VEHÍCULO: '',
     SEMIRREMOLQUE: '',

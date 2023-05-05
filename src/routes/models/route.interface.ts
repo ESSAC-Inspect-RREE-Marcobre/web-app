@@ -9,8 +9,6 @@ export interface Route {
   materialType: string
   name: string
   code: string
-  message: string
-  state: string
   checked: boolean
   doubleLicensePlate: boolean
   isFull: boolean
@@ -35,9 +33,7 @@ export const ROUTE_INITIAL_STATE: Route = {
   checked: false,
   doubleLicensePlate: false,
   isFull: false,
-  message: '',
   active: true,
-  state: '',
   vehicles: [],
   reports: [],
   routeProfiles: []
