@@ -22,6 +22,16 @@ const ImportExcel = ({ isOpen, onClose, onSuccess, toastId, type }: ImportExcelP
   const [errors, setErrors] = useState<string[]>([])
   const [isLoading, toggleLoading, setIsLoading] = useBooleanState()
 
+  const reset = (): void => {
+    setFile(null)
+    setErrors([])
+  }
+
+  const handleCancel = (): void => {
+    reset()
+    onClose()
+  }
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault()
 
@@ -88,14 +98,19 @@ const ImportExcel = ({ isOpen, onClose, onSuccess, toastId, type }: ImportExcelP
     setFile(file)
   }
 
+  const handleClickInput = (): void => {
+    if (isLoading) return
+    setErrors([])
+  }
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={handleCancel}>
       <div className=''>
         <h1 className='uppercase text-center text-xl font-bold'>Importar excel</h1>
         <Divider className='mt-1'></Divider>
         <form onSubmit={handleSubmit}>
           <div className='mt-5'>
-            <input onChange={onChange} type="file" accept='.xlsx,.xlsm,.xls,.xlt,.xlsb' />
+            <input onClick={handleClickInput} onChange={onChange} type="file" accept='.xlsx,.xlsm,.xls,.xlt,.xlsb' />
             <div className='max-h-[150px] overflow-y-scroll mt-4'>
               {
                 errors.map((error, index) => (<p className='m-0 mt-1 text-red max-w-[80%]' key={index}>{error}</p>))
@@ -103,7 +118,7 @@ const ImportExcel = ({ isOpen, onClose, onSuccess, toastId, type }: ImportExcelP
             </div>
           </div>
           <div className='mt-2 flex gap-3 justify-center'>
-            <Button color='secondary' onClick={onClose}>Cancelar</Button>
+            <Button color='secondary' onClick={handleCancel}>Cancelar</Button>
             <Button color='primary' type='submit' isLoading={isLoading}>Importar</Button>
           </div>
         </form>
