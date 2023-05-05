@@ -1,16 +1,17 @@
 import React, { type ReactElement } from 'react'
 import { type Route } from '@/routes/models/route.interface'
 import Table, { type Action, type Column } from '@/shared/ui/components/table/Table'
-import { formatDate, goToGoogleMapsPage } from '../utils'
+import { formatDate, goToGoogleMapsPage } from '../../utils/redirect-maps'
 import Button from '@/shared/ui/components/Button'
 import { useNavigate } from 'react-router-dom'
 
 interface RoutesTableProps {
   routes: Route[]
   showFilter: boolean
+  setRoutesFiltered: (routes: Route[]) => void
 }
 
-const RoutesTable = ({ routes, showFilter }: RoutesTableProps): ReactElement => {
+const RoutesTable = ({ routes, showFilter, setRoutesFiltered }: RoutesTableProps): ReactElement => {
   const navigate = useNavigate()
 
   const ROUTE_COLUMNS: Array<Column<Route>> = [
@@ -99,10 +100,14 @@ const RoutesTable = ({ routes, showFilter }: RoutesTableProps): ReactElement => 
           return 'No hay superviciones'
         }
 
+        const filteredArray = checkpoints.filter(
+          (obj, index, self) => index === self.findIndex((o) => o.id === obj.id || o.profile.id === obj.profile.id)
+        )
+
         return (
           <select className='block w-full h-10 px-2 rounded-t-md border-b border-solid border-blue-dark outline-none capitalize'>
             {
-              ...checkpoints.map(({ profile }) => (
+              ...filteredArray.map(({ profile }) => (
                 <option key={profile.id}>{profile.name}</option>
               ))
             }
@@ -155,7 +160,7 @@ const RoutesTable = ({ routes, showFilter }: RoutesTableProps): ReactElement => 
     <main>
       {
         routes.length > 0
-          ? <Table columns={ROUTE_COLUMNS} data={routes} pagination={PAGINATION} showFilter={showFilter} actions={ROUTE_ACTIONS} />
+          ? <Table setRoutesFiltered={setRoutesFiltered} columns={ROUTE_COLUMNS} data={routes} pagination={PAGINATION} showFilter={showFilter} actions={ROUTE_ACTIONS} />
           : <p className='text-center uppercase font-semibold text-red mt-10'>No hay recorridos en ese rango de fecha</p>
       }
     </main>

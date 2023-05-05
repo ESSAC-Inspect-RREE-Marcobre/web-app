@@ -1,4 +1,4 @@
-import React, { useState, useEffect, type ReactElement } from 'react'
+import React, { useState, useEffect, type ReactElement, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { findAllRoutes, getDateRange, getLastDateRequest, getRoutes, getStatus } from '@/shared/config/store/features/routes-slice'
@@ -9,6 +9,9 @@ import Button from '@/shared/ui/components/Button'
 import RoutesTable from './RoutesTable'
 import { DateRange, LOCALE_OPTIONS, type DateRangeObject } from '@/shared/types/date-range'
 import Divider from '@/shared/ui/components/Divider'
+import { type Route } from '@/routes/models/route.interface'
+import { generateExcel } from '@/routes/utils/json-to-sheet'
+import { routeToExcelRoute } from '@/routes/utils/route-to-excel'
 
 const RoutesView = (): ReactElement => {
   // const routeServices = new RoutesServices()
@@ -22,8 +25,26 @@ const RoutesView = (): ReactElement => {
   const [dateRange, setDateRange] = useState<DateRange>(new DateRange())
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [showFilter, setShowFilter] = useState<boolean>(false)
+  const [isExportingExcel, setIsExportingExcel] = useState<boolean>(false)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [errorMessage, setErrorMessage] = useState<string>('')
+
+  const routesFiltered = useRef<Route[]>(routes)
+
+  const setRoutesFiltered = (routes: Route[]): void => {
+    routesFiltered.current = routes
+  }
+
+  const exportExcel = (): void => {
+    setIsExportingExcel(true)
+    // console.log(routesFiltered.current)
+    void generateExcel(routesFiltered.current.map(routeToExcelRoute))
+      .finally(() => {
+        setTimeout(() => {
+          setIsExportingExcel(false)
+        }, 2000)
+      })
+  }
 
   useEffect(() => {
     const routesJson = sessionStorage.getItem('routes-request')
@@ -63,7 +84,10 @@ const RoutesView = (): ReactElement => {
     <div>
       <div className='mt-4 mb-2 flex justify-between items-center'>
         <h1 className="font-bold text-3x text-left  uppercase text-3xl">Recorridos</h1>
-        {routes.length > 0 && <Button color='primary' onClick={() => { setShowFilter(!showFilter) }}>{showFilter ? 'Ocultar filtros' : 'Mostrar filtros'}</Button>}
+        <div className='flex gap-2'>
+          {routes.length > 0 && <Button color='primary' onClick={() => { setShowFilter(!showFilter) }}>{showFilter ? 'Ocultar filtros' : 'Mostrar filtros'}</Button>}
+          {routes.length > 0 && <Button color='secondary' onClick={exportExcel} isLoading={isExportingExcel}>Exportar Excel</Button>}
+        </div>
       </div>
       <Divider></Divider>
       <p className='font-medium uppercase'>Filtro</p>
@@ -108,7 +132,7 @@ const RoutesView = (): ReactElement => {
 
       <div className='mb-6'></div>
 
-      <RoutesTable routes={routes} showFilter={showFilter} />
+      <RoutesTable routes={routes} showFilter={showFilter} setRoutesFiltered={setRoutesFiltered} />
 
     </div>
   )
