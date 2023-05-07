@@ -9,7 +9,7 @@ import SelectInput from '@/shared/ui/components/SelectInput'
 import { UserRole } from '@/users/models/enum/role.enum'
 import Button from '@/shared/ui/components/Button'
 import Divider from '@/shared/ui/components/Divider'
-import { ProfilesService } from '@/users/services/profiles.service'
+import { ProfilesService } from '@/profiles/services/profiles.service'
 import { useBooleanState } from '@/shared/hooks/useBooleanState'
 import { PROFILE_DTO_INITIAL_STATE, type ProfileDto } from '@/profiles/models/profile.interface'
 

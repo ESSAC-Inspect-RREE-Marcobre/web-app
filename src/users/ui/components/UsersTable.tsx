@@ -61,9 +61,14 @@ const UsersTable = ({ toggleShowDetailModal, toggleShowUpdateModal }: UsersTable
     {
       id: 'name',
       columnName: 'Nombre',
-      filterFunc: (user) => user.profile.fullName,
-      render: (user) => capitalize(user.profile.fullName),
-      sortFunc: (a, b) => a.profile.fullName > b.profile.fullName ? 1 : -1
+      filterFunc: (user) => `${user.profile.name} ${user.profile.lastName}`,
+      render: (user) => capitalize(`${user.profile.name} ${user.profile.lastName}`),
+      sortFunc: (a, b) => {
+        const nameA = `${a.profile.name} ${a.profile.lastName}`
+        const nameB = `${b.profile.name} ${b.profile.lastName}`
+
+        return nameA > nameB ? 1 : -1
+      }
     }
   ]
 

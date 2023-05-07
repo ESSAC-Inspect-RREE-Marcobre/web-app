@@ -25,10 +25,10 @@ interface TableProps {
   showFilter?: boolean
   actions?: Array<Action<any>>
   onRowClick?: (entity: any) => void
-  setRoutesFiltered?: (routes: any[]) => void
+  setDataFiltered?: (data: any[]) => void
 }
 
-const Table = ({ data, columns, pagination, showFilter = true, actions, onRowClick, setRoutesFiltered = () => {} }: TableProps): ReactElement => {
+const Table = ({ data, columns, pagination, showFilter = true, actions, onRowClick, setDataFiltered = () => {} }: TableProps): ReactElement => {
   const [filterValue, setFilterValue] = useState<string>('')
   const [filterColumn, setFilterColumn] = useState<Column<any> | null>(columns[0] ? columns[0] : null)
 
@@ -79,7 +79,7 @@ const Table = ({ data, columns, pagination, showFilter = true, actions, onRowCli
       filtered = [...filteredSorted]
     }
 
-    setRoutesFiltered(filtered)
+    setDataFiltered(filtered)
 
     if (pageSize !== 0) {
       const firstIndex = page * pageSize

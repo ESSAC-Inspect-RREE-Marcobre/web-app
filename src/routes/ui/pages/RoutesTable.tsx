@@ -160,7 +160,7 @@ const RoutesTable = ({ routes, showFilter, setRoutesFiltered }: RoutesTableProps
     <main>
       {
         routes.length > 0
-          ? <Table setRoutesFiltered={setRoutesFiltered} columns={ROUTE_COLUMNS} data={routes} pagination={PAGINATION} showFilter={showFilter} actions={ROUTE_ACTIONS} />
+          ? <Table setDataFiltered={setRoutesFiltered} columns={ROUTE_COLUMNS} data={routes} pagination={PAGINATION} showFilter={showFilter} actions={ROUTE_ACTIONS} />
           : <p className='text-center uppercase font-semibold text-red mt-10'>No hay recorridos en ese rango de fecha</p>
       }
     </main>

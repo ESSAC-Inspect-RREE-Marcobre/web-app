@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { type ReactElement, useEffect, useState } from 'react'
+import React, { type ReactElement, useEffect, useState, useMemo } from 'react'
 import { REPORT_INITIAL_STATE, type Report } from '@/reports/models/report.interface'
 import EyeIcon from '@/shared/ui/assets/icons/EyeIcon'
 import { useNavigate, useSearchParams } from 'react-router-dom'
@@ -79,7 +79,7 @@ const RouteDetail = (): ReactElement => {
     setShowImage(true)
   }
 
-  const findDriverFullname = (): string => {
+  const findDriverFullName = (): string => {
     const driver = route.routeProfiles.find((routeProfile) => routeProfile.role.toUpperCase() === 'CONDUCTOR')
     return driver?.profile.fullName ?? 'No hay conductor'
   }
@@ -92,6 +92,16 @@ const RouteDetail = (): ReactElement => {
         setIsPdfLoading(false)
       })
   }
+
+  const vehicle = useMemo(() => {
+    const vehicle = route.vehicles.find((vehicle) => !vehicle.vehicleType.isCart)
+    return vehicle ?? null
+  }, [route])
+
+  const cart = useMemo(() => {
+    const cart = route.vehicles.find((vehicle) => vehicle.vehicleType.isCart)
+    return cart ?? null
+  }, [route])
 
   return (
     <div className='container-page'>
@@ -166,26 +176,26 @@ const RouteDetail = (): ReactElement => {
             <div className='border-b-[1px] border-black'>
               <div className='p-2 flex gap-5'>
                 <p>1. Propietario:</p>
-                <p >{findDriverFullname()}</p>
+                <p >{findDriverFullName()}</p>
               </div>
             </div>
             <div className='border-b-[1px] border-black'>
               <div className='p-2 flex gap-5'>
                 <p>2. Placa de Camión / Tracto:</p>
-                <p>{route.doubleLicensePlate ? (route.vehicles[1] ? route.vehicles[1].licensePlate : '') : (route.vehicles[0] ? route.vehicles[0].licensePlate : '')}</p>
+                <p>{vehicle?.licensePlate}</p>
               </div>
             </div>
             <div className='border-b-[1px] border-black'>
               <div className='p-2 flex gap-5'>
                 <p>3. Placa de Remolque / Semirremolque:</p>
-                <p>{route.doubleLicensePlate ? (route.vehicles[0] ? route.vehicles[0].licensePlate : '') : 'NO APLICA'}</p>
+                <p>{route.doubleLicensePlate ? cart?.licensePlate : 'NO APLICA'}</p>
               </div>
             </div>
             <div className=''>
               <div className='p-2 flex gap-5'>
                 <p>4. Marca y modelo:</p>
                 <p>
-                  {route.doubleLicensePlate ? route.vehicles[1] ? `${route.vehicles[1].brand} ${route.vehicles[1].model}` : '' : route.vehicles[0] ? `${route.vehicles[0].brand} ${route.vehicles[0].model}` : ''}
+                  {vehicle?.brand} {vehicle?.model}
                 </p>
               </div>
             </div>

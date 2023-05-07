@@ -13,6 +13,7 @@ import { type VehicleType } from '@/vehicles/models/vehicle-type.interface'
 import { VehicleTypesService } from '@/vehicles/services/vehicle-types.service'
 import SelectInput from '@/shared/ui/components/SelectInput'
 import { useNavigate } from 'react-router-dom'
+import Divider from '@/shared/ui/components/Divider'
 
 interface VehicleFormModalProps {
   isCart: boolean
@@ -120,7 +121,8 @@ const VehicleFormModal = ({ isOpen, isCart, onClose }: VehicleFormModalProps): R
             )
           : (
             <div className='p-3'>
-              <h2>Vehicle Form</h2>
+              <h2 className='uppercase text-lg font-semibold text-center mb-2'>Agregar un {!isCart ? 'vehiculo' : 'semirremolque'}</h2>
+              <Divider className='mt-0'></Divider>
               <form onSubmit={handleSubmit}>
 
                 <SelectInput<VehicleType>
