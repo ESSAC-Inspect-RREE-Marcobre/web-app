@@ -27,7 +27,11 @@ const GroupsComponent = (): ReactElement => {
 
     const reportTypesService = new ReportTypesService()
     void reportTypesService.findAllGroups(selectedReportType.id)
-      .then(setGroups)
+      .then((response) => {
+        const aux = response
+        aux.sort((a, b) => a.name.localeCompare(b.name))
+        setGroups(aux)
+      })
   }, [selectedReportType])
 
   const handleAddGroup = (): void => {

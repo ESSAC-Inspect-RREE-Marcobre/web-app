@@ -22,7 +22,7 @@ const ReportTypesView = (): ReactElement => {
     const reportTypesService = new ReportTypesService()
     void reportTypesService.findAll()
       .then(response => {
-        response.sort((a, b) => a.id > b.id ? 1 : -1)
+        response.sort((a, b) => a.name.localeCompare(b.name))
         setReportTypes(response)
       })
   }, [])

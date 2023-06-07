@@ -103,12 +103,16 @@ const RouteDetail = (): ReactElement => {
     return cart ?? null
   }, [route])
 
+  const goToCheckpoints = (): void => {
+    navigate(`/detalle-checkpoints?report-id=${report.id}&route-id=${route.id}`)
+  }
+
   return (
     <div className='container-page'>
       <div className='flex justify-between'>
         <h1 className='text-2xl uppercase font-semibold'>Checklist - {route.code}</h1>
         <div className='flex gap-2'>
-          {report.checkpoints.length > 0 && <Button color='primary' onClick={() => { navigate(`/detalle-checkpoints?report-id=${report.id}&route-id=${route.id}`) }}>Ver Observaciones</Button>}
+          {report.checkpoints.length > 0 && <Button color='primary' onClick={goToCheckpoints}>Ver Supervisiones</Button>}
           <Button color='primary' onClick={exportPdf} isLoading={isPdfLoading}>Exportar PDF</Button>
         </div>
       </div>
