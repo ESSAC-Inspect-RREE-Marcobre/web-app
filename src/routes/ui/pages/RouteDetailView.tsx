@@ -9,6 +9,7 @@ import { ReportsService } from '@/reports/services/reports.service'
 import { ROUTE_INITIAL_STATE, type Route } from '@/routes/models/route.interface'
 import { type FieldReport } from '@/fields/models/field-report.interface'
 import { type FieldGroup } from '@/fields/models/group.interface'
+import ShowImageEvidence from '@/checkpoints/ui/components/ShowImageEvidence'
 
 interface FieldSelected {
   url: string
@@ -59,7 +60,7 @@ const RouteDetail = (): ReactElement => {
 
     fieldReports.forEach(fieldReport => {
       const groupId = fieldReport.group.id
-      const groupIndex = groups.findIndex(g => g.id === groupId)
+      const groupIndex = reportGroups.findIndex(g => g.id === groupId)
 
       if (groupIndex === -1) reportGroups.push({ id: groupId, name: fieldReport.group.name })
 
@@ -70,7 +71,20 @@ const RouteDetail = (): ReactElement => {
       }
     })
 
-    setFieldReports(fieldReportsMap)
+    const fieldReportsMapKeys = Array.from(fieldReportsMap.keys())
+    const fieldReportsMapSorted = new Map<string, FieldReport[]>()
+
+    fieldReportsMapKeys.forEach(key => {
+      const fieldReports = fieldReportsMap.get(key)
+
+      const reportGroup = reportGroups.find(group => group.id === key)
+
+      if (reportGroup) {
+        fieldReportsMapSorted.set(reportGroup.name, fieldReports ?? [])
+      }
+    })
+
+    setFieldReports(fieldReportsMapSorted)
     setGroups(reportGroups)
   }
 
@@ -131,7 +145,7 @@ const RouteDetail = (): ReactElement => {
 
             <div className='border-b-[1px] border-black'>
               <div className='px-2 flex gap-2 '>
-                <p>Codigo:</p>
+                <p>Código:</p>
                 <p >{route.code}</p>
               </div>
             </div>
@@ -140,14 +154,14 @@ const RouteDetail = (): ReactElement => {
             </div>
             <div className=''>
               <div className='flex gap-2 px-2'>
-                <p>Fecha de elaboracion</p>
+                <p>Fecha de elaboración</p>
                 <p>{new Date(route.createdAt).toLocaleDateString('Es-es', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
               </div>
             </div>
           </div>
           <div className='w-[40%] flex flex-col border-r-[1px] border-black'>
             <div className='h-[65%] border-b-[1px] border-black grid place-items-center'>
-              <p className='text-center uppercase font-semibold'>Insepcción de {report.reportType.name}</p>
+              <p className='text-center uppercase font-semibold'>Inspección de {report.reportType.name}</p>
             </div>
             <div className='h-[30%] grid place-items-center'>
               <p className=''>Área: Seguridad y Salud Ocupacional</p>
@@ -218,8 +232,7 @@ const RouteDetail = (): ReactElement => {
         </div>
         <div className='uppercase'>
           {
-            Array.from(fieldReports.entries()).sort((a, b) => a[0] > b[0] ? 1 : -1).map(([key, value], index) => {
-              const group = groups.find((g) => g.id === key)
+            Array.from(fieldReports.entries()).sort((a, b) => a[0].localeCompare(b[0])).map(([key, value], index) => {
               return (
                 <div
                   key={key}
@@ -234,7 +247,7 @@ const RouteDetail = (): ReactElement => {
                         <p>Normal</p>
                       </div>
                       <div className='w-[65%] grid items-center border-l-[1px] border-white'>
-                        <p className='px-2'>2.{index + 1}. {group?.name.toUpperCase()}</p>
+                        <p className='px-2'>2.{key.toUpperCase()}</p>
                       </div>
                       <div className='w-[15%] flex flex-col gap-2 border-l-[1px] border-white'>
                         <p className='text-center'>cumple</p>
@@ -259,7 +272,7 @@ const RouteDetail = (): ReactElement => {
                               <p>{!fieldReport.isCritical && 'X'}</p>
                             </div>
                             <div className='py-1 w-[65%] grid items-center border-l-[1px] border-black'>
-                              <div className='flex gap-3'>
+                              <div className='flex items-center gap-3'>
                                 <p className='py-1 px-2 font-semibold w-1/3'>{fieldReport.field.name}</p>
                                 {fieldReport.imageEvidence !== '' && <EyeIcon className='w-6 h-6 cursor-pointer transition-all hover:text-red' onClick={() => { imageEvidenceOnClick(fieldReport.imageEvidence, fieldReport.field.name) }}></EyeIcon>}
                               </div>
@@ -281,7 +294,7 @@ const RouteDetail = (): ReactElement => {
         </div>
       </div>
 
-      {/* {showImage && <ShowImageEvidence imageUrl={fieldSelected.url} name={fieldSelected.name} close={() => { setShowImage(false) }} />} */}
+      {showImage && <ShowImageEvidence isOpen={showImage} imageUrl={fieldSelected.url} name={fieldSelected.name} onClose={() => { setShowImage(false) }} />}
     </div>
 
   )
