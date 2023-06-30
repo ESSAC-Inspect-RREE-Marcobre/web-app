@@ -37,6 +37,13 @@ const RoutesTable = ({ routes, showFilter, setRoutesFiltered }: RoutesTableProps
       sortFunc: (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     },
     {
+      id: 'company',
+      columnName: 'Empresa de transporte',
+      filterFunc: (route) => route.routeProfiles[0].profile.company,
+      render: (route) => route.routeProfiles[0].profile.company,
+      sortFunc: (a, b) => a.routeProfiles[0].profile.company > b.routeProfiles[0].profile.company ? 1 : -1
+    },
+    {
       id: 'startLocation',
       columnName: 'Ubicación de Inicio',
       filterFunc: (route) => route.startLocation,

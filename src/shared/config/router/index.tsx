@@ -18,6 +18,7 @@ import MaterialsView from '@/vehicles/ui/pages/MaterialsView'
 import ProfileView from '@/profiles/ui/pages/ProfileView'
 import Layout from '@/shared/ui/components/Layout/Layout'
 import LoginView from '@/auth/ui/pages/LoginView'
+import KeyRequired from '@/shared/ui/components/Layout/KeyRequired'
 
 const authRequiredRoutes: RouteObject[] = [
   {
@@ -85,6 +86,16 @@ const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginView />
+  },
+  {
+    path: 'vista-detalle-recorrido',
+    element: <KeyRequired />,
+    children: [
+      {
+        path: '',
+        element: <RouteDetailView isPreviewPage={true}/>
+      }
+    ]
   },
   {
     path: '/',

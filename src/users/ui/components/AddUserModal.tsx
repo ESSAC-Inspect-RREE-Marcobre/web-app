@@ -42,8 +42,7 @@ const AddUserModal = ({ isOpen, onClose }: AddUserModalProps): ReactElement => {
     name: false,
     lastName: false,
     license: false,
-    licenseCategory: false,
-    phone1: false
+    licenseCategory: false
   })
 
   useEffect(() => {
@@ -216,7 +215,8 @@ const AddUserModal = ({ isOpen, onClose }: AddUserModalProps): ReactElement => {
             value={profile.phone1}
             name='phone1' placeholder='Teléfono 1' type='tel'
             setValid={(valid) => { setIsValidInput('phone1', valid) }}
-            setValue={setProfileValue}></Input>
+            setValue={setProfileValue}
+            required={false}></Input>
 
           <Input
             label='Teléfono 2'

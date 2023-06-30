@@ -14,8 +14,8 @@ export default class RoutesServices extends AppServices {
   }
 
   findAll = async ({ dateRange, profileId }: FindAllOptions): Promise<Route[]> => {
-    const dateStart = dateRange.formattedDateStart()
-    const dateEnd = dateRange.formattedDateEnd()
+    const dateStart = dateRange.timestampDateStart()
+    const dateEnd = dateRange.timestampDateEnd()
 
     return await this.get<Route[]>(`?date-start=${dateStart}&date-end=${dateEnd}&profile-id=${profileId}`)
       .then(response => {
@@ -35,8 +35,8 @@ export class RoutePDFServices extends AppServices {
     super({ baseUrl: 'routes', contentType: 'application/pdf' })
   }
 
-  exportPdf = async (code: string): Promise<void> => {
-    await this.get<any>(`/${code}/generate-pdf`, {
+  exportPdf = async (id: string, code: string): Promise<void> => {
+    await this.get<any>(`/${id}/generate-pdf`, {
       responseType: 'blob'
     })
       .then(response => {
@@ -44,8 +44,10 @@ export class RoutePDFServices extends AppServices {
         const downloadUrl = URL.createObjectURL(blob)
         const link = document.createElement('a')
 
+        const name = `checklist-${code}`.toUpperCase()
+
         link.href = downloadUrl
-        link.download = `${code}.pdf`
+        link.download = `${name}.pdf`
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)

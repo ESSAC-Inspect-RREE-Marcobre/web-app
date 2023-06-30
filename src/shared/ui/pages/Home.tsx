@@ -3,18 +3,26 @@ import React, { type ReactElement, useEffect, useState } from 'react'
 import { type AppDispatch } from '@/shared/config/store'
 import { useDispatch, useSelector } from 'react-redux'
 import Button from '../components/Button'
-import { findAllRoutes, getDateRange, getLastDateRequest, getReports } from '@/shared/config/store/features/routes-slice'
-import { DateRange, type DateRangeObject, LOCALE_OPTIONS } from '@/shared/types/date-range'
+import { findAllRoutes, getDateRange, getLastDateRequest, getReports, getStatus } from '@/shared/config/store/features/routes-slice'
+import { DateRange } from '@/shared/types/date-range'
+import { useDateRange } from '@/shared/hooks/useDateRange'
+
+import CustomDatePicker from '../components/CustomDatePicker'
+import moment from 'moment'
+import { STATUS } from '@/shared/config/store/types'
 
 const Home = (): ReactElement => {
   const dispatch = useDispatch<AppDispatch>()
+
+  const routeStatus = useSelector(getStatus)
   const reports = useSelector(getReports)
   const lastDateRequest = useSelector(getLastDateRequest)
   const dateRangeFromStore = useSelector(getDateRange)
 
   const [reportsByType, setReportsByType] = useState<Map<string, number>>(new Map<string, number>())
+  const { startDate, endDate, handleEndDateChange, handleStartDateChange } = useDateRange({})
 
-  const [dateRange, setDateRange] = useState<DateRange>(new DateRange())
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const reportsJson = sessionStorage.getItem('routes-request')
@@ -27,23 +35,12 @@ const Home = (): ReactElement => {
     groupReportsByReportType()
   }, [reports])
 
+  useEffect(() => {
+    setIsLoading(routeStatus === STATUS.PENDING)
+  }, [routeStatus])
+
   const findAll = (): void => {
-    void dispatch(findAllRoutes({ dateRange, profileId: '' }))
-  }
-
-  const onChangeInputDate = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    const { name, value } = event.target
-    const date = new Date(value)
-    date.setHours(date.getHours() + 5)
-
-    const aux: DateRangeObject = {
-      'date-start': new Date(dateRange._dateStart).toISOString(),
-      'date-end': new Date(dateRange._dateEnd).toISOString()
-    }
-
-    aux[name as keyof DateRangeObject] = date.toISOString()
-
-    setDateRange(DateRange.fromJson(aux))
+    void dispatch(findAllRoutes({ dateRange: new DateRange({ dateEnd: endDate, dateStart: startDate }), profileId: '' }))
   }
 
   const groupReportsByReportType = (): void => {
@@ -64,41 +61,31 @@ const Home = (): ReactElement => {
         <div className='w-full border-b-2 mt-2 mb-4'></div>
 
         <div className='flex gap-7 items-center justify-between mt-2'>
-          <div className='flex justify-between w-3/5 gap-5'>
-            <div className='w-1/2'>
-              <p>Fecha Inicio</p>
-              <input
-                className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-                type="date"
-                name='date-start'
-                value={dateRange.formattedDateStart()}
-                onChange={onChangeInputDate}
-              />
-            </div>
-            <div className='w-1/2'>
-              <p>Fecha Fin</p>
-              <input
-                className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-                type="date"
-                name='date-end'
-                value={dateRange.formattedDateEnd()}
-                onChange={onChangeInputDate}
-              />
-            </div>
+          <div className='grid grid-cols-2 w-3/5 gap-5'>
+            <CustomDatePicker
+              label='Fecha Inicio'
+              date={startDate}
+              handleChange={handleStartDateChange}
+            />
+            <CustomDatePicker
+              label='Fecha Fin'
+              date={endDate}
+              handleChange={handleEndDateChange}
+            />
           </div>
 
           <div className='flex gap-3 justify-end items-center w-2/5'>
             <div>
               <p className='font-bold'>Fecha de última búsqueda</p>
-              <p>{lastDateRequest !== null ? lastDateRequest.toLocaleDateString('es-PE', { ...LOCALE_OPTIONS, hour: '2-digit', minute: '2-digit', hourCycle: 'h12' }) : ''}</p>
+              <p>{lastDateRequest !== null ? moment(lastDateRequest).format('DD/MM/YYYY hh:mm a') : ''}</p>
               <p className='font-bold'>Rango de fecha solicitada</p>
               <div className='flex gap-2 font-semibold'>
-                <p>{dateRangeFromStore.isoFormattedStringDateStart()}</p>
+                <p>{dateRangeFromStore.formattedStartDate()}</p>
                 <p>A</p>
-                <p>{dateRangeFromStore.isoFormattedStringDateEnd()}</p>
+                <p>{dateRangeFromStore.formattedEndDate()}</p>
               </div>
             </div>
-            <Button color='secondary' onClick={findAll}>Buscar recorridos</Button>
+            <Button color='secondary' onClick={findAll} isLoading={isLoading}>Buscar recorridos</Button>
           </div>
         </div>
 

@@ -1,3 +1,4 @@
+import moment from 'moment'
 
 type Option = 'numeric' | '2-digit' | undefined
 
@@ -26,21 +27,21 @@ export class DateRange {
 
   toObject = (): DateRangeObject => {
     return {
-      'date-start': this.formattedDateStart(),
-      'date-end': this.formattedDateEnd()
+      'date-start': this.timestampDateStart(),
+      'date-end': this.timestampDateEnd()
     }
   }
 
-  formattedDateStart = (): string => UTCToLocalDateStringInput(this._dateStart)
-  formattedDateEnd = (): string => UTCToLocalDateStringInput(this._dateEnd)
+  timestampDateStart = (): number => this._dateStart.getTime()
+  timestampDateEnd = (): number => this._dateEnd.getTime()
 
-  isoFormattedStringDateStart = (): string => this._dateStart.toISOString().split('T')[0].split('-').reverse().join('/')
-  isoFormattedStringDateEnd = (): string => this._dateEnd.toISOString().split('T')[0].split('-').reverse().join('/')
+  formattedStartDate = (): string => moment(this._dateStart).format('DD/MM/YYYY')
+  formattedEndDate = (): string => moment(this._dateEnd).format('DD/MM/YYYY')
 }
 
 export interface DateRangeObject {
-  'date-start': string
-  'date-end': string
+  'date-start': number
+  'date-end': number
 }
 
 export function UTCToLocalDateStringInput (date: Date): string {

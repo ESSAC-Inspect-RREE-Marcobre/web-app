@@ -35,5 +35,6 @@ export class AuthServices extends AppServices {
   logout = (): void => {
     this.storeService.removeToken()
     this.storeService.removeUser()
+    sessionStorage.removeItem('routes-request')
   }
 }

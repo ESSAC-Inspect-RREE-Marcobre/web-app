@@ -10,13 +10,18 @@ import { ROUTE_INITIAL_STATE, type Route } from '@/routes/models/route.interface
 import { type FieldReport } from '@/fields/models/field-report.interface'
 import { type FieldGroup } from '@/fields/models/group.interface'
 import ShowImageEvidence from '@/checkpoints/ui/components/ShowImageEvidence'
+import Divider from '@/shared/ui/components/Divider'
 
 interface FieldSelected {
   url: string
   name: string
 }
 
-const RouteDetail = (): ReactElement => {
+interface RouteDetailProps {
+  isPreviewPage?: boolean
+}
+
+const RouteDetail = ({ isPreviewPage }: RouteDetailProps): ReactElement => {
   const routesService = new RoutesServices()
   const reportsService = new ReportsService()
   const navigate = useNavigate()
@@ -101,7 +106,7 @@ const RouteDetail = (): ReactElement => {
   const exportPdf = (): void => {
     setIsPdfLoading(true)
     const routePDFService = new RoutePDFServices()
-    void routePDFService.exportPdf(route.code)
+    void routePDFService.exportPdf(route.id, route.code)
       .then(() => {
         setIsPdfLoading(false)
       })
@@ -121,21 +126,38 @@ const RouteDetail = (): ReactElement => {
     navigate(`/detalle-checkpoints?report-id=${report.id}&route-id=${route.id}`)
   }
 
+  const images: FieldReport[] = useMemo(() => {
+    const values = Array.from(fieldReports.entries())
+
+    const images: FieldReport[] = []
+
+    values.forEach(([key, value]) => {
+      const fieldReportsWithImageEvidence = value.filter(fieldReport => fieldReport.imageEvidence !== null && fieldReport.imageEvidence.length > 0)
+
+      images.push(...fieldReportsWithImageEvidence)
+    })
+
+    return images
+  }, [fieldReports])
+
   return (
-    <div className='container-page'>
+    <div className={`${!isPreviewPage ? 'container-page' : ''} `}>
       <div className='flex justify-between'>
         <h1 className='text-2xl uppercase font-semibold'>Checklist - {route.code}</h1>
-        <div className='flex gap-2'>
-          {report.checkpoints.length > 0 && <Button color='primary' onClick={goToCheckpoints}>Ver Supervisiones</Button>}
-          <Button color='primary' onClick={exportPdf} isLoading={isPdfLoading}>Exportar PDF</Button>
-        </div>
+        {!isPreviewPage &&
+          (
+            <div className='flex gap-2'>
+              {report.checkpoints.length > 0 && <Button color='primary' onClick={goToCheckpoints}>Ver Supervisiones</Button>}
+              <Button color='primary' onClick={exportPdf} isLoading={isPdfLoading}>Exportar PDF</Button>
+            </div>
+          )}
       </div>
       <div className='h-[1px] bg-gray-400 w-full my-4'></div>
       <div className='border-[1px] border-black border-b-0 mx-auto h-full mb-10'>
         <div className='flex justify-center  border-b-[1px] border-black'>
           <div className='w-[30%] grid place-items-center border-r-[1px] border-black'>
             <div className='p-5'>
-              <img src="./logo-header.png" alt="" width={250}/>
+              <img src="./logo-header.png" alt="" width={250} />
             </div>
           </div>
           <div className='w-[30%] border-r-[1px] border-black'>
@@ -274,7 +296,7 @@ const RouteDetail = (): ReactElement => {
                             <div className='py-1 w-[65%] grid items-center border-l-[1px] border-black'>
                               <div className='flex items-center gap-3'>
                                 <p className='py-1 px-2 font-semibold w-1/3'>{fieldReport.field.name}</p>
-                                {fieldReport.imageEvidence !== '' && <EyeIcon className='w-6 h-6 cursor-pointer transition-all hover:text-red' onClick={() => { imageEvidenceOnClick(fieldReport.imageEvidence, fieldReport.field.name) }}></EyeIcon>}
+                                {!isPreviewPage && fieldReport.imageEvidence !== '' && <EyeIcon className='w-6 h-6 cursor-pointer transition-all hover:text-red' onClick={() => { imageEvidenceOnClick(fieldReport.imageEvidence, fieldReport.field.name) }}></EyeIcon>}
                               </div>
                             </div>
                             <div className='w-[15%] flex text-center border-l-[1px] border-black'>
@@ -293,6 +315,29 @@ const RouteDetail = (): ReactElement => {
           }
         </div>
       </div>
+
+     { isPreviewPage && (<div className='break-inside-avoid'>
+        <h2 className='uppercase font-semibold text-2xl'>Evidencias del checklist</h2>
+        <Divider className='mt-2' />
+        {
+          images.length > 0 && (
+            <div className='grid grid-cols-2 gap-10 '>
+              {
+                images.map((image) => {
+                  return (
+                    <div key={image.fieldId} className='flex flex-col justify-start items-start break-inside-avoid'>
+                      <p className='font-semibold'>{image.field.name}</p>
+                      <div className='h-[450px]'>
+                        <img src={image.imageEvidence} alt='evidence' className='w-full h-full object-contain' />
+                      </div>
+                    </div>
+                  )
+                })
+              }
+            </div>
+          )
+        }
+      </div>)}
 
       {showImage && <ShowImageEvidence isOpen={showImage} imageUrl={fieldSelected.url} name={fieldSelected.name} onClose={() => { setShowImage(false) }} />}
     </div>

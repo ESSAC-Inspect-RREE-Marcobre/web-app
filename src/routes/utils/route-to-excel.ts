@@ -2,49 +2,54 @@ import moment from 'moment'
 import { type Route } from '../models/route.interface'
 
 const formatDate = (date: string): string => {
-  return moment(date).format('DD/MM/YYYY, h:mm A')
+  return moment(date).format('DD/MM/YYYY')
+}
+
+const formatTime = (date: string): string => {
+  return moment(date).format('h:mm A')
 }
 
 export const routeToExcelRoute = (route: Route): Record<string, any> => {
-  const { createdAt, startLocation, endLocation, materialType, name, code, doubleLicensePlate, isFull, vehicles, reports, routeProfiles } = route
+  const { createdAt, startLocation, endLocation, materialType, code, isFull, vehicles, routeProfiles } = route
 
   const excelRoute = {
-    'FECHA DE CREACIÓN': formatDate(createdAt),
-    'LUGAR DE INICIO': startLocation,
-    'LUGAR DE FIN': endLocation ?? 'No terminado',
-    CONDUCTOR: '',
-    'VA LLENO': isFull ? 'Sí' : 'No',
-    'TIPO DE MATERIAL': materialType,
-    PLACA: name,
     CÓDIGO: code,
-    'DOBLE PLACA': doubleLicensePlate ? 'Sí' : 'No',
-    VEHÍCULO: '',
-    SEMIRREMOLQUE: '',
-    OBSERVACIONES: 0
+    FECHA: formatDate(createdAt),
+    HORA: formatTime(createdAt),
+    CONDUCTOR: '',
+    COPILOTO: 'NO REGISTRADO',
+    UNIDAD: '',
+    'PLACA CABINA': '',
+    ACOPLADO: '',
+    'PLACA ACOPLADO': '',
+    CONDICIÓN: isFull ? 'Cargado' : 'Vacío',
+    'TIPO DE MATERIAL': materialType,
+    EMPRESA: 'NO REGISTRADO',
+    INICIO: startLocation,
+    DESTINO: endLocation
   }
 
-  if (vehicles.length > 0) {
-    vehicles.forEach((vehicle) => {
-      if (vehicle.vehicleType.isCart) {
-        excelRoute.SEMIRREMOLQUE = vehicle.licensePlate
-      } else {
-        excelRoute.VEHÍCULO = vehicle.licensePlate
-      }
-    })
-  }
-
-  if (reports.length > 0) {
-    const checkpoints = reports[0].checkpoints
-    if (checkpoints.length > 0) {
-      excelRoute.OBSERVACIONES = checkpoints[checkpoints.length - 1].observations.length
+  vehicles.forEach((vehicle) => {
+    if (!vehicle.vehicleType.isCart) {
+      excelRoute.ACOPLADO = vehicle.vehicleType.name
+      excelRoute['PLACA ACOPLADO'] = vehicle.licensePlate
+    } else {
+      excelRoute.UNIDAD = vehicle.vehicleType.name
+      excelRoute['PLACA CABINA'] = vehicle.licensePlate
     }
-  }
+  })
 
   if (routeProfiles.length > 0) {
     const routeProfile = routeProfiles.find(routeProfile => routeProfile.role === 'conductor')
     if (routeProfile) {
       const { profile } = routeProfile
       excelRoute.CONDUCTOR = `${profile.name} ${profile.lastName}`
+    }
+
+    const copilotProfile = routeProfiles.find(routeProfile => routeProfile.role === 'copiloto')
+    if (copilotProfile) {
+      const { profile } = copilotProfile
+      excelRoute.COPILOTO = `${profile.name} ${profile.lastName}`
     }
   }
 
