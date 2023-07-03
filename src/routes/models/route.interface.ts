@@ -7,6 +7,11 @@ export interface Route {
   startLocation: string
   endLocation: string
   materialType: string
+  materialAmount: string
+  startPernocte: string | null
+  endPernocte: string | null
+  copilotFullName: string | null
+  supervisorFullName: string | null
   name: string
   code: string
   checked: boolean
@@ -36,5 +41,10 @@ export const ROUTE_INITIAL_STATE: Route = {
   active: true,
   vehicles: [],
   reports: [],
-  routeProfiles: []
+  routeProfiles: [],
+  materialAmount: '',
+  startPernocte: null,
+  endPernocte: null,
+  copilotFullName: null,
+  supervisorFullName: null
 }

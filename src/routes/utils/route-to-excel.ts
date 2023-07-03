@@ -10,7 +10,7 @@ const formatTime = (date: string): string => {
 }
 
 export const routeToExcelRoute = (route: Route): Record<string, any> => {
-  const { createdAt, startLocation, endLocation, materialType, code, isFull, vehicles, routeProfiles } = route
+  const { createdAt, startLocation, endLocation, materialType, materialAmount, code, isFull, vehicles, routeProfiles, startPernocte } = route
 
   const excelRoute = {
     CÓDIGO: code,
@@ -23,14 +23,16 @@ export const routeToExcelRoute = (route: Route): Record<string, any> => {
     ACOPLADO: '',
     'PLACA ACOPLADO': '',
     CONDICIÓN: isFull ? 'Cargado' : 'Vacío',
-    'TIPO DE MATERIAL': materialType,
+    'TIPO DE MATERIAL': materialType.length > 0 ? materialType : 'NO REGISTRADO',
+    CANTIDAD: materialAmount.length > 0 ? materialAmount : 'NO REGISTRADO',
     EMPRESA: 'NO REGISTRADO',
     INICIO: startLocation,
-    DESTINO: endLocation
+    DESTINO: endLocation,
+    PERNOCTE: startPernocte ? formatTime(startPernocte) : 'NO REGISTRADO'
   }
 
   vehicles.forEach((vehicle) => {
-    if (!vehicle.vehicleType.isCart) {
+    if (vehicle.vehicleType.isCart) {
       excelRoute.ACOPLADO = vehicle.vehicleType.name
       excelRoute['PLACA ACOPLADO'] = vehicle.licensePlate
     } else {
@@ -39,18 +41,18 @@ export const routeToExcelRoute = (route: Route): Record<string, any> => {
     }
   })
 
-  if (routeProfiles.length > 0) {
-    const routeProfile = routeProfiles.find(routeProfile => routeProfile.role === 'conductor')
-    if (routeProfile) {
-      const { profile } = routeProfile
-      excelRoute.CONDUCTOR = `${profile.name} ${profile.lastName}`
-    }
+  const routeProfile = routeProfiles.find(routeProfile => routeProfile.role === 'conductor')
+  if (routeProfile) {
+    const { profile } = routeProfile
+    excelRoute.CONDUCTOR = `${profile.name} ${profile.lastName}`
+  }
 
-    const copilotProfile = routeProfiles.find(routeProfile => routeProfile.role === 'copiloto')
-    if (copilotProfile) {
-      const { profile } = copilotProfile
-      excelRoute.COPILOTO = `${profile.name} ${profile.lastName}`
-    }
+  const copilotProfile = routeProfiles.find(routeProfile => routeProfile.role === 'copiloto')
+  if (copilotProfile) {
+    const { profile } = copilotProfile
+    excelRoute.COPILOTO = `${profile.name} ${profile.lastName}`
+  } else if (route.copilotFullName !== null && route.copilotFullName.length > 0) {
+    excelRoute.COPILOTO = route.copilotFullName
   }
 
   return excelRoute
