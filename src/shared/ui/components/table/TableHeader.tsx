@@ -1,15 +1,14 @@
-import { SortIconAsc, SortIconDesc } from '@/shared/ui/components/table/SortIcons'
 import React, { type ReactElement, useContext } from 'react'
-import { type Column } from './Table'
 import TableContext from './TableContext'
+import { SortIconAsc, SortIconDesc } from './Icons/SortIcons'
+import { type Column } from './types'
 
 interface TableHeaderProps {
-  columns: Array<Column<any>>
   hasActions: boolean
 }
 
-const TableHeader = ({ columns, hasActions }: TableHeaderProps): ReactElement => {
-  const { sortColumn, sortDirection, setSortColumn, setSortDirection } = useContext(TableContext)
+const TableHeader = ({ hasActions }: TableHeaderProps): ReactElement => {
+  const { sortColumn, sortDirection, setSortColumn, setSortDirection, columns } = useContext(TableContext)
 
   const onClick = (newColumn: Column<any>): void => {
     if (newColumn.sortFunc === undefined) {
@@ -23,29 +22,27 @@ const TableHeader = ({ columns, hasActions }: TableHeaderProps): ReactElement =>
     setSortColumn(newColumn)
   }
 
-  const sortIcon = (column: Column<any>): React.ReactElement => {
-    if (sortColumn?.id !== column.id) return (<span></span>)
-    const className = 'text-white w-6 h-6'
+  const sortIcon = (): React.ReactElement => {
+    const className = ' w-6 h-6'
     return sortDirection === 'asc' ? <SortIconAsc className={className} /> : <SortIconDesc className={className} />
   }
 
-  const tableHeadStyle = 'text-sm font-medium text-white px-6 py-4 capitalize'
-
   return (
-    <thead className='border-b bg-black'>
+    <thead className='border-b bg-black text-left text-xs leading-4 font-medium uppercase tracking-wider text-white' >
       <tr>
+
         {
           columns?.map((column, index) => (
-            <th key={index} onClick={() => { onClick(column) }} className={`${tableHeadStyle} ${column.sortFunc !== undefined ? 'cursor-pointer' : ''}`}>
-              <p className='flex items-center justify-center gap-4'>
+            <th key={index} onClick={() => { onClick(column) }} className={`text-sm  px-6 py-4 capitalize font-semibold ${column.sortFunc !== undefined ? 'cursor-pointer' : ''}`}>
+              <p className='flex items-center justify-center gap-4 text-center'>
                 {column.columnName.toUpperCase()}
-                {sortIcon(column)}
+                {(sortColumn?.id === column.id) && sortIcon()}
               </p>
             </th>
           ))
         }
         {
-          hasActions && <th className={tableHeadStyle}>Acciones</th>
+          hasActions && <th className='text-sm font-medium px-6 py-4 capitalize'><p className='flex items-center justify-center'>ACCIONES</p> </th>
         }
       </tr>
     </thead>

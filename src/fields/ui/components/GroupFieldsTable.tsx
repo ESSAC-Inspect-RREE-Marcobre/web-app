@@ -1,12 +1,13 @@
 import { type GroupField } from '@/fields/models/group-field.interface'
 import React, { Fragment, useContext, type ReactElement } from 'react'
 import { GroupContext } from '../contexts/GroupContext'
-import Table, { type Action, type Column } from '@/shared/ui/components/table/Table'
+import Table from '@/shared/ui/components/table/Table'
 import EditIcon from '@/shared/ui/assets/icons/EditIcon'
 import DeleteIcon from '@/shared/ui/assets/icons/DeleteIcon'
 import { GroupsService } from '@/reports/services/groups.service'
 import { toast } from 'react-toastify'
 import { ReportTypeContext } from '../../../reports/ui/contexts/ReportTypeContext'
+import { type Action, type Column } from '@/shared/ui/components/table/types'
 
 interface GroupFieldsTableProps {
   groupFields: GroupField[]

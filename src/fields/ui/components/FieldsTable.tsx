@@ -1,6 +1,6 @@
 import React, { useContext, type ReactElement } from 'react'
 import { FieldContext } from '../contexts/FieldContext'
-import Table, { type Action, type Column } from '@/shared/ui/components/table/Table'
+import Table from '@/shared/ui/components/table/Table'
 import { type Field } from '@/fields/models/field.interface'
 import DeleteIcon from '@/shared/ui/assets/icons/DeleteIcon'
 import ToggleOnIcon from '@/shared/ui/assets/icons/ToggleOnIcon'
@@ -8,6 +8,7 @@ import ToggleOffIcon from '@/shared/ui/assets/icons/ToggleOfIcon'
 import EditIcon from '@/shared/ui/assets/icons/EditIcon'
 import { FieldsService } from '@/fields/services/fields.service'
 import { toast } from 'react-toastify'
+import { type Action, type Column } from '@/shared/ui/components/table/types'
 
 const FieldsTable = (): ReactElement => {
   const { toastId, fields, setFieldForm, removeField, updateField } = useContext(FieldContext)

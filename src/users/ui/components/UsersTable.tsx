@@ -1,6 +1,6 @@
 import React, { useContext, type ReactElement } from 'react'
 import { UserContext } from '../contexts/UserContext'
-import Table, { type Action, type Column } from '@/shared/ui/components/table/Table'
+import Table from '@/shared/ui/components/table/Table'
 import { type User } from '@/users/models/user.interface'
 import { capitalize } from '@/shared/utils'
 import EditIcon from '@/shared/ui/assets/icons/EditIcon'
@@ -9,6 +9,7 @@ import { UsersService } from '@/users/services/user.service'
 import { toast } from 'react-toastify'
 import ToggleOnIcon from '@/shared/ui/assets/icons/ToggleOnIcon'
 import ToggleOffIcon from '@/shared/ui/assets/icons/ToggleOfIcon'
+import { type Action, type Column } from '@/shared/ui/components/table/types'
 
 interface UsersTableProps {
   toggleShowDetailModal: () => void

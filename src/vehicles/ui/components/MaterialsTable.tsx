@@ -1,12 +1,13 @@
 import React, { useContext, type ReactElement } from 'react'
 import { MaterialContext } from '../contexts/MaterialContext'
-import Table, { type Action, type Column } from '@/shared/ui/components/table/Table'
+import Table from '@/shared/ui/components/table/Table'
 import { type Material } from '@/vehicles/models/material.interface'
 import { capitalize } from '@/shared/utils'
 import DeleteIcon from '@/shared/ui/assets/icons/DeleteIcon'
 import EditIcon from '@/shared/ui/assets/icons/EditIcon'
 import { MaterialsService } from '@/vehicles/services/materials.service'
 import { toast } from 'react-toastify'
+import { type Action, type Column } from '@/shared/ui/components/table/types'
 
 const MaterialsTable = (): ReactElement => {
   const { toastId, materials, setMaterialForm, removeMaterial, setSelectedMaterial } = useContext(MaterialContext)

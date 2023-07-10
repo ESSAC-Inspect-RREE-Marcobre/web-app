@@ -1,38 +1,61 @@
 import React from 'react'
-import { type Column } from './Table'
+import { type Column, type SortDirection } from './types'
 
-export type SortDirection = 'asc' | 'desc'
+export interface TableContextInterface {
+  data: any[]
+  columns: Array<Column<any>>
 
-interface TableContextInterface {
   filterValue: string
-  setFilterValue: React.Dispatch<React.SetStateAction<string>>
+  setFilterValue: (filterValue: string) => void
+
   filterColumn: Column<any> | null
-  setFilterColumn: React.Dispatch<React.SetStateAction<Column<any> | null>>
+  setFilterColumn: (column: Column<any> | null) => void
+
   sortColumn: Column<any> | null
-  setSortColumn: React.Dispatch<React.SetStateAction<Column<any> | null>>
+  setSortColumn: (sortColumn: Column<any> | null) => void
+
   sortDirection: SortDirection
-  setSortDirection: React.Dispatch<React.SetStateAction<SortDirection>>
+  setSortDirection: (sortDirection: SortDirection) => void
+
   pageCount: number
+
   pageSize: number
-  setPageSize: React.Dispatch<React.SetStateAction<number>>
+  setPageSize: (pageSize: number) => void
+
   page: number
-  setPage: React.Dispatch<React.SetStateAction<number>>
+  setPage: (page: number) => void
+
+  selectedColumn: string
+
+  animatedRow: string
+  setAnimatedRow: (animatedRow: string) => void
+
+  selectable: boolean
+
+  setSelectedColumns: (selectedColumns: Array<Column<any>>) => void
 }
 
 const TableContext = React.createContext<TableContextInterface>({
+  data: [],
+  columns: [],
   filterValue: '',
-  setFilterValue: () => {},
+  setFilterValue: () => { },
   filterColumn: null,
-  setFilterColumn: () => {},
+  setFilterColumn: () => { },
   sortColumn: null,
-  setSortColumn: () => {},
+  setSortColumn: () => { },
   sortDirection: 'asc',
-  setSortDirection: () => {},
+  setSortDirection: () => { },
   pageCount: 0,
   pageSize: 0,
-  setPageSize: () => {},
+  setPageSize: () => { },
   page: 0,
-  setPage: () => {}
+  setPage: () => { },
+  selectedColumn: '',
+  animatedRow: '',
+  setAnimatedRow: () => { },
+  selectable: false,
+  setSelectedColumns: () => { }
 })
 
 export default TableContext

@@ -1,62 +1,49 @@
-import React, { type ReactElement, useEffect, useMemo, useState } from 'react'
+import React, { type ReactElement, useMemo, useState, useEffect } from 'react'
 import Filter from './TableFilter'
 import Pagination from './Pagination'
 import TableBody from './TableBody'
-import TableContext, { type SortDirection } from './TableContext'
+import TableContext from './TableContext'
 import TableHeader from './TableHeader'
+import { type SortDirection, type Column, type TableProps } from './types'
+import ConfigSection from './ConfigSection'
+import { usePage } from './hooks/usePage'
+import { useFilter } from './hooks/useFilter'
+import { useSelectedColumns } from './hooks/useSelectedColumns'
 
-export interface Column<T> {
-  id: string
-  columnName: string
-  filterFunc: (entity: T) => string
-  sortFunc?: (a: T, b: T) => number
-  render: (entity: T) => React.ReactElement | string
-}
+const Table = ({
+  data,
+  columns,
+  pagination,
+  showFilter = true,
+  actions = [],
+  initialSortDirection = 'asc',
+  selectedColumn = '',
+  onRowClick,
+  animatedRow = '',
+  setAnimatedRow = () => { },
+  defaultSortColumnId = '',
+  selectable = false,
+  setDataFiltered = () => { }
+}: TableProps): ReactElement => {
+  const { filterValue, setFilterValue } = useFilter({ showFilter })
+  const { page, pageCount, pageSize, tablePagination, setPage, setPageSize, setPageCount } = usePage({ data, pagination })
+  const { selectedColumns, setSelectedColumns } = useSelectedColumns({ columns })
 
-export interface Action<T> {
-  icon: (entity: T) => React.ReactNode
-  actionFunc: (entity: T) => void
-}
+  const [filterColumn, setFilterColumn] = useState<Column<any> | null>(null)
+  const [sortColumn, setSortColumn] = useState<Column<any> | null>(getDefaultSortColumn)
+  const [sortDirection, setSortDirection] = useState<SortDirection>(initialSortDirection)
 
-interface TableProps {
-  data: any[]
-  columns: Array<Column<any>>
-  pagination?: number[]
-  showFilter?: boolean
-  actions?: Array<Action<any>>
-  onRowClick?: (entity: any) => void
-  setDataFiltered?: (data: any[]) => void
-}
+  function getDefaultSortColumn (): Column<any> | null {
+    const defaultSortColumn = columns.find(column => column.id === defaultSortColumnId)
 
-const Table = ({ data, columns, pagination, showFilter = true, actions, onRowClick, setDataFiltered = () => {} }: TableProps): ReactElement => {
-  const [filterValue, setFilterValue] = useState<string>('')
-  const [filterColumn, setFilterColumn] = useState<Column<any> | null>(columns[0] ? columns[0] : null)
+    const firstColumn = columns[0] ? columns[0] : null
 
-  const [sortColumn, setSortColumn] = useState<Column<any> | null>(columns[0] ? columns[0] : null)
-  const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
-
-  const [pageCount, setPageCount] = useState<number>(0)
-  const [pageSize, setPageSize] = useState<number>(0)
-  const [page, setPage] = useState<number>(0)
-
-  const [pageSizes, setPageSizes] = useState<number[]>([])
-
-  useEffect(() => {
-    const paginationWithOutNegatives = pagination ? pagination.filter(pageSize => pageSize > 0) : []
-    paginationWithOutNegatives.sort((a, b) => a - b)
-
-    setPageSizes(paginationWithOutNegatives)
-    setPageSize(paginationWithOutNegatives[0] ?? 0)
-  }, [])
+    return defaultSortColumn ?? firstColumn
+  }
 
   useEffect(() => {
-    setPage(0)
-    setPageCount(Math.ceil(data.length / pageSize))
-  }, [pageSize])
-
-  useEffect(() => {
-    setFilterValue('')
-  }, [showFilter])
+    setFilterColumn(selectedColumns[0] ?? null)
+  }, [selectedColumns])
 
   const filteredData = useMemo(() => {
     let filtered = data
@@ -93,21 +80,49 @@ const Table = ({ data, columns, pagination, showFilter = true, actions, onRowCli
   return (
 
     <div className='mb-6'>
-      <TableContext.Provider value={{ filterValue, setFilterValue, filterColumn, setFilterColumn, sortColumn, setSortColumn, sortDirection, setSortDirection, pageCount, page, setPage, pageSize, setPageSize }}>
-        {showFilter && <Filter columns={columns} />}
+      <TableContext.Provider value={{
+        data: filteredData,
+        columns: selectedColumns,
+        filterValue,
+        setFilterValue,
+        filterColumn,
+        setFilterColumn,
+        sortColumn,
+        setSortColumn,
+        sortDirection,
+        setSortDirection,
+        pageCount,
+        page,
+        setPage,
+        pageSize,
+        setPageSize,
+        selectedColumn,
+        animatedRow,
+        setAnimatedRow,
+        selectable,
+        setSelectedColumns
+      }}>
+       { showFilter && <div className='flex items-center gap-2 mt-5 mb-4'>
+          <div className='flex-1'>
+            <Filter />
+          </div>
+          <ConfigSection columns={columns}/>
+        </div>}
 
         <div className='overflow-x-auto'>
           <div className='inline-block min-w-full'>
             <div className='overflow-hidden'>
               <table className='min-w-full text-center'>
-                <TableHeader columns={columns} hasActions={actions !== undefined} />
-                <TableBody data={filteredData} columns={columns} actions={actions} onRowClick={onRowClick} />
+                <TableHeader hasActions={actions.length > 0} />
+                <TableBody
+                  actions={actions}
+                  onRowClick={onRowClick} />
               </table>
             </div>
           </div>
         </div>
 
-        {pagination && <Pagination pagination={pageSizes} />}
+        {pagination && <Pagination pagination={tablePagination} />}
       </TableContext.Provider>
     </div>
 

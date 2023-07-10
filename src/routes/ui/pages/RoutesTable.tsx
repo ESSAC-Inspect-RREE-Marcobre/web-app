@@ -1,9 +1,11 @@
 import React, { type ReactElement } from 'react'
 import { type Route } from '@/routes/models/route.interface'
-import Table, { type Action, type Column } from '@/shared/ui/components/table/Table'
-import { formatDate, goToGoogleMapsPage } from '../../utils/redirect-maps'
+import Table from '@/shared/ui/components/table/Table'
+import { goToGoogleMapsPage } from '../../utils/redirect-maps'
 import Button from '@/shared/ui/components/Button'
 import { useNavigate } from 'react-router-dom'
+import { type Action, type Column } from '@/shared/ui/components/table/types'
+import { formatDate, formatDateTime, formatTime } from '@/shared/utils'
 
 interface RoutesTableProps {
   routes: Route[]
@@ -34,6 +36,14 @@ const RoutesTable = ({ routes, showFilter, setRoutesFiltered }: RoutesTableProps
       columnName: 'Fecha de Creación',
       filterFunc: (route) => formatDate(route.createdAt),
       render: (route) => formatDate(route.createdAt),
+      sortFunc: (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      filterType: 'date'
+    },
+    {
+      id: 'createdAtTime',
+      columnName: 'Hora de Creación',
+      filterFunc: (route) => formatTime(route.createdAt),
+      render: (route) => formatTime(route.createdAt),
       sortFunc: (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     },
     {
@@ -42,6 +52,80 @@ const RoutesTable = ({ routes, showFilter, setRoutesFiltered }: RoutesTableProps
       filterFunc: (route) => route.routeProfiles[0].profile.company,
       render: (route) => route.routeProfiles[0].profile.company,
       sortFunc: (a, b) => a.routeProfiles[0].profile.company > b.routeProfiles[0].profile.company ? 1 : -1
+    },
+    {
+      id: 'driver',
+      columnName: 'Conductor',
+      render: (route) => {
+        const driver = route.routeProfiles.find((routeProfile) => routeProfile.role === 'conductor')
+
+        if (driver) {
+          return `${driver.profile.name} ${driver.profile.lastName}`.toUpperCase()
+        }
+
+        return 'Sin conductor'
+      },
+      filterFunc: (route) => {
+        const driver = route.routeProfiles.find((routeProfile) => routeProfile.role === 'conductor')
+
+        if (driver) {
+          return `${driver.profile.name} ${driver.profile.lastName}`
+        }
+
+        return 'Sin conductor'
+      }
+    },
+    {
+      id: 'copilot',
+      columnName: 'Copiloto',
+      render: (route) => {
+        if (route.copilotFullName !== null && route.copilotFullName.length > 0) {
+          return route.copilotFullName.toUpperCase()
+        }
+
+        const copilot = route.routeProfiles.find((routeProfile) => routeProfile.role === 'copiloto')
+
+        if (copilot) {
+          return `${copilot.profile.name} ${copilot.profile.lastName}`.toUpperCase()
+        }
+
+        return 'Sin copiloto'
+      },
+      filterFunc: (route) => {
+        if (route.copilotFullName !== null && route.copilotFullName.length > 0) {
+          return route.copilotFullName
+        }
+
+        const copilot = route.routeProfiles.find((routeProfile) => routeProfile.role === 'copiloto')
+
+        if (copilot) {
+          return `${copilot.profile.name} ${copilot.profile.lastName}`
+        }
+
+        return 'Sin copiloto'
+      }
+    },
+    {
+      id: 'vehicle',
+      columnName: 'Unidad',
+      render: (route) => {
+        const vehicle = route.vehicles.find((vehicle) => !vehicle.vehicleType.isCart)
+
+        if (vehicle) {
+          return vehicle.licensePlate
+        }
+
+        return 'Sin unidad'
+      },
+      filterFunc: (route) => {
+        const vehicle = route.vehicles.find((vehicle) => !vehicle.vehicleType.isCart)
+
+        if (vehicle) {
+          return vehicle.licensePlate
+        }
+
+        return 'Sin unidad'
+      }
     },
     {
       id: 'startLocation',
@@ -145,7 +229,32 @@ const RoutesTable = ({ routes, showFilter, setRoutesFiltered }: RoutesTableProps
 
         return isFullA > isFullB ? 1 : -1
       }
+    },
+    {
+      id: 'material',
+      columnName: 'Tipo de Material',
+      filterFunc: (route) => route.materialType,
+      render: (route) => route.materialType
+    },
+    {
+      id: 'materialAmount',
+      columnName: 'Cantidad de Material',
+      filterFunc: (route) => route.materialAmount,
+      render: (route) => route.materialAmount
+    },
+    {
+      id: 'startPernocte',
+      columnName: 'Inicio Pernocte',
+      filterFunc: (route) => route.startPernocte ? formatDateTime(route.startPernocte) : 'No',
+      render: (route) => route.startPernocte ? formatDateTime(route.startPernocte) : 'No'
+    },
+    {
+      id: 'endPernocte',
+      columnName: 'Fin Pernocte',
+      filterFunc: (route) => route.endPernocte ? formatDateTime(route.endPernocte) : 'No',
+      render: (route) => route.endPernocte ? formatDateTime(route.endPernocte) : 'No'
     }
+
   ]
 
   const PAGINATION = [5, 10, 15, 20]

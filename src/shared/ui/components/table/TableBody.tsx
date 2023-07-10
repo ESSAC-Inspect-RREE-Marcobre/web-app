@@ -1,15 +1,14 @@
-import React, { type ReactElement } from 'react'
-import { type Action, type Column } from './Table'
+import React, { useContext, type ReactElement } from 'react'
+import TableContext from './TableContext'
+import { type Data, type Action } from './types'
 
-interface TableBodyProps {
-  data: any[]
-  columns: Array<Column<any>>
-  actions?: Array<Action<any>>
-  onRowClick?: (entity: any) => void
+interface TableBodyProps<T> {
+  actions: Array<Action<T>>
+  onRowClick?: (entity: T) => void
 }
 
-const TableBody = ({ data, columns, actions, onRowClick }: TableBodyProps): ReactElement => {
-  const tableBodyStyle = 'text-sm text-gray-900 font-light px-6 py-4'
+const TableBody = <T extends Data,>({ actions, onRowClick }: TableBodyProps<T>): ReactElement => {
+  const { selectedColumn, data, columns } = useContext(TableContext)
 
   const onClick = (entity: any): void => {
     if (onRowClick) {
@@ -20,35 +19,39 @@ const TableBody = ({ data, columns, actions, onRowClick }: TableBodyProps): Reac
   return (
     <tbody>
       {
-        data.map((value, index) => (
-          <tr key={index} onClick={() => { onClick(value) }} className={`bg-white border-b ${onRowClick ? 'transition duration-300 ease-in-out hover:bg-gray-100 cursor-pointer' : ''}`}>
-            {
-              columns?.map((column, index) => (
-                <td key={index} className={tableBodyStyle}>{column.render(value)}</td>
-              ))
-            }
+        data.map((value, index) => {
+          return (
+            <tr key={index} onClick={() => { onClick(value) }}
+              className={`${String(value.id) === selectedColumn ? 'bg-gray-200' : 'bg-white '} border-b ${onRowClick ? 'transition duration-300 ease-in-out hover:bg-gray-200 cursor-pointer' : ''} 
+            [&>td]:text-sm [&>td]:text-gray-900 [&>td]:px-6 [&>td]:py-4 [&>td]:max-w-[320px]`}>
 
-            {actions &&
-              (
-                <td className={tableBodyStyle}>
-                  <div className='flex justify-center items-center gap-2 py-3'>
-                    {
-                      actions?.map((action, index) => (
-                        <div key={index} onClick={() => { action.actionFunc(value) }}>
-                          {
-                            action.icon(value)
-                          }
-                        </div>
-                      ))
-                    }
-                  </div>
+              {
+                columns?.map((column, index) => (
+                  <td key={index}><p className="line-clamp-2">{column.render(value)}</p></td>
+                ))
+              }
 
-                </td>
-              )
-            }
-          </tr>
-        ))
+              {actions.length > 0 &&
+                (
+                  <td>
+                    <div className='flex justify-center items-center gap-2 py-3'>
+                      {
+                        actions?.map((action, index) => (
+                          <div key={index} onClick={() => { action.actionFunc(value) }}>
+                            {
+                              action.icon(value)
+                            }
+                          </div>
+                        ))
+                      }
+                    </div>
 
+                  </td>
+                )
+              }
+            </tr>
+          )
+        })
       }
     </tbody>
   )

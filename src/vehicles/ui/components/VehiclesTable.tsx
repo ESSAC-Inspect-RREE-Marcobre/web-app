@@ -1,6 +1,6 @@
 import React, { useContext, type ReactElement } from 'react'
 import { toast } from 'react-toastify'
-import Table, { type Action, type Column } from '@/shared/ui/components/table/Table'
+import Table from '@/shared/ui/components/table/Table'
 import DeleteIcon from '@/shared/ui/assets/icons/DeleteIcon'
 import EditIcon from '@/shared/ui/assets/icons/EditIcon'
 import EyeIcon from '@/shared/ui/assets/icons/EyeIcon'
@@ -8,6 +8,7 @@ import { VehiclesService } from '@/vehicles/services/vehicles.service'
 import { type Vehicle } from '@/vehicles/models/vehicle.interface'
 import { VehicleContext } from '../contexts/VehicleContext'
 import { isDate } from '@/shared/utils'
+import { type Action, type Column } from '@/shared/ui/components/table/types'
 
 interface VehiclesTableProps {
   toggleShowForm: () => void

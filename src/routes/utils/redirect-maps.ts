@@ -6,7 +6,3 @@ export const goToGoogleMapsPage = (locationString: string): void => {
 
   window.open(link, '_blank', 'noopener,noreferrer')
 }
-
-export const formatDate = (date: string): string => {
-  return new Date(date).toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' })
-}
