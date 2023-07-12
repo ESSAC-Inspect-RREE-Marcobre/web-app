@@ -10,7 +10,7 @@ const formatTime = (date: string): string => {
 }
 
 export const routeToExcelRoute = (route: Route): Record<string, any> => {
-  const { createdAt, startLocation, endLocation, materialType, materialAmount, code, isFull, vehicles, routeProfiles, startPernocte } = route
+  const { createdAt, startLocation, endLocation, materialType, materialAmount, code, isFull, vehicles, routeProfiles, startPernocte, endPernocte, pernocteLocation } = route
 
   const excelRoute = {
     CÓDIGO: code,
@@ -28,7 +28,8 @@ export const routeToExcelRoute = (route: Route): Record<string, any> => {
     EMPRESA: 'NO REGISTRADO',
     INICIO: startLocation,
     DESTINO: endLocation,
-    PERNOCTE: startPernocte ? formatTime(startPernocte) : 'NO REGISTRADO'
+    PERNOCTE: pernocteLocation ?? 'NO REGISTRADO',
+    'TIEMPO PERNOCTE (min)': 0
   }
 
   vehicles.forEach((vehicle) => {
@@ -53,6 +54,13 @@ export const routeToExcelRoute = (route: Route): Record<string, any> => {
     excelRoute.COPILOTO = `${profile.name} ${profile.lastName}`
   } else if (route.copilotFullName !== null && route.copilotFullName.length > 0) {
     excelRoute.COPILOTO = route.copilotFullName
+  }
+
+  if (startPernocte !== null && startPernocte.length > 0 && endPernocte !== null && endPernocte.length > 0) {
+    const start = moment(startPernocte)
+    const end = moment(endPernocte)
+    const minutes = end.diff(start, 'minutes')
+    excelRoute['TIEMPO PERNOCTE (min)'] = minutes
   }
 
   return excelRoute

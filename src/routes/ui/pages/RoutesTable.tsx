@@ -6,6 +6,7 @@ import Button from '@/shared/ui/components/Button'
 import { useNavigate } from 'react-router-dom'
 import { type Action, type Column } from '@/shared/ui/components/table/types'
 import { formatDate, formatDateTime, formatTime } from '@/shared/utils'
+import moment from 'moment'
 
 interface RoutesTableProps {
   routes: Route[]
@@ -137,7 +138,7 @@ const RoutesTable = ({ routes, showFilter, setRoutesFiltered }: RoutesTableProps
             className='hover:text-red cursor-pointer'
             onClick={() => { goToGoogleMapsPage(route.startLocation) }}
           >
-          {route.startLocation}
+            {route.startLocation}
           </p>
         )
       },
@@ -155,7 +156,7 @@ const RoutesTable = ({ routes, showFilter, setRoutesFiltered }: RoutesTableProps
             className='hover:text-red cursor-pointe'
             onClick={() => { goToGoogleMapsPage(route.endLocation) }}
           >
-          {route.endLocation}
+            {route.endLocation}
           </p>
         )
       },
@@ -253,6 +254,43 @@ const RoutesTable = ({ routes, showFilter, setRoutesFiltered }: RoutesTableProps
       columnName: 'Fin Pernocte',
       filterFunc: (route) => route.endPernocte ? formatDateTime(route.endPernocte) : 'No',
       render: (route) => route.endPernocte ? formatDateTime(route.endPernocte) : 'No'
+    },
+    {
+      id: 'pernocteTime',
+      columnName: 'Tiempo de Pernocte (min)',
+      filterFunc: (route) => {
+        if (route.startPernocte === null || route.endPernocte === null) return 'Pernocte no terminado'
+
+        const date1 = moment(route.startPernocte)
+        const date2 = moment(route.endPernocte)
+
+        return Math.ceil(date2.diff(date1, 'minutes')).toString()
+      },
+      render: (route) => {
+        if (route.startPernocte === null || route.endPernocte === null) return 'Pernocte no terminado'
+
+        const date1 = moment(route.startPernocte)
+        const date2 = moment(route.endPernocte)
+
+        return Math.ceil(date2.diff(date1, 'minutes')).toString()
+      }
+    },
+    {
+      id: 'pernocteLocation',
+      columnName: 'Ubicación de Pernocte',
+      filterFunc: (route) => route.pernocteLocation ?? 'No realizada',
+      render: (route) => {
+        if (route.pernocteLocation === null) return 'No realizada'
+
+        return (
+          <p
+            className='hover:text-red cursor-pointer'
+            onClick={() => { goToGoogleMapsPage(route.pernocteLocation ?? '') }}
+          >
+            {route.pernocteLocation}
+          </p>
+        )
+      }
     }
 
   ]

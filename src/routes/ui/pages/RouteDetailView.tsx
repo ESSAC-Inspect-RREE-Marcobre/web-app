@@ -295,7 +295,7 @@ const RouteDetail = ({ isPreviewPage }: RouteDetailProps): ReactElement => {
                             </div>
                             <div className='py-1 w-[65%] grid items-center border-l-[1px] border-black'>
                               <div className='flex items-center gap-3'>
-                                <p className='py-1 px-2 font-semibold w-1/3'>{fieldReport.field.name}</p>
+                                <p className='py-1 px-2 font-semibold'>{fieldReport.field.name}</p>
                                 {!isPreviewPage && fieldReport.imageEvidence !== '' && <EyeIcon className='w-6 h-6 cursor-pointer transition-all hover:text-red' onClick={() => { imageEvidenceOnClick(fieldReport.imageEvidence, fieldReport.field.name) }}></EyeIcon>}
                               </div>
                             </div>

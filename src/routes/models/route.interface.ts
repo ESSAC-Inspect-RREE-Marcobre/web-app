@@ -8,6 +8,7 @@ export interface Route {
   endLocation: string
   materialType: string
   materialAmount: string
+  pernocteLocation: string | null
   startPernocte: string | null
   endPernocte: string | null
   copilotFullName: string | null
@@ -43,6 +44,7 @@ export const ROUTE_INITIAL_STATE: Route = {
   reports: [],
   routeProfiles: [],
   materialAmount: '',
+  pernocteLocation: null,
   startPernocte: null,
   endPernocte: null,
   copilotFullName: null,

@@ -13,9 +13,9 @@ export const formatDate = (date: string): string => {
 }
 
 export const formatDateTime = (date: string): string => {
-  return moment(date).format('DD/MM/YYYY HH:mm A')
+  return moment(date).format('DD/MM/YYYY hh:mm A')
 }
 
 export const formatTime = (date: string): string => {
-  return moment(date).format('HH:mm A')
+  return moment(date).format('hh:mm A')
 }
