@@ -46,6 +46,7 @@ export const routeToExcelRoute = (route: Route): Record<string, any> => {
   if (routeProfile) {
     const { profile } = routeProfile
     excelRoute.CONDUCTOR = `${profile.name} ${profile.lastName}`
+    excelRoute.EMPRESA = profile.company
   }
 
   const copilotProfile = routeProfiles.find(routeProfile => routeProfile.role === 'copiloto')
