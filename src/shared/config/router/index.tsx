@@ -19,6 +19,7 @@ import ProfileView from '@/profiles/ui/pages/ProfileView'
 import Layout from '@/shared/ui/components/Layout/Layout'
 import LoginView from '@/auth/ui/pages/LoginView'
 import KeyRequired from '@/shared/ui/components/Layout/KeyRequired'
+import CheckpointView from '@/checkpoints/ui/pages/CheckpointView'
 
 const authRequiredRoutes: RouteObject[] = [
   {
@@ -88,12 +89,16 @@ const router = createBrowserRouter([
     element: <LoginView />
   },
   {
-    path: 'vista-detalle-recorrido',
+    path: '',
     element: <KeyRequired />,
     children: [
       {
-        path: '',
+        path: 'vista-detalle-recorrido',
         element: <RouteDetailView isPreviewPage={true}/>
+      },
+      {
+        path: 'vista-detalle-checkpoint',
+        element: <CheckpointView />
       }
     ]
   },
