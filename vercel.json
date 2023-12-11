@@ -1,11 +1,15 @@
 {
-
-  "rewrites":  [
+  "redirects": [
     {
       "source": "/api/v1/:match*",
       "destination": "http://38.25.40.74:4000/:match*",
       "statusCode": 200
-    },
-    {"source": "/(.*)", "destination": "/"}
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
   ]
 }
