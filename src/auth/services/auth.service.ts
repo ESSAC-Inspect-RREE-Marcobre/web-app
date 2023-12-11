@@ -27,6 +27,8 @@ export class AuthServices extends AppServices {
           this.storeService.saveToken(tokens.accessToken)
           this.storeService.saveUser(userStorage)
 
+          console.log('userStorage', userStorage)
+
           return authenticatedUser
         }
       })
